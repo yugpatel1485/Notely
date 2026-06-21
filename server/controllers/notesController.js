@@ -34,21 +34,29 @@ function generateShareToken() {
 async function getNotes(req, res, next) {
   try {
     const { page, limit, skip } = parsePagination(req.query);
-    const filter = { owner: req.user._id };
+    const userId = req.user._id;
+
+    // Base filter: notes owned by user OR shared with user
+    const baseFilter = {
+      $or: [
+        { owner: userId },
+        { 'sharedWith.user': userId },
+      ],
+    };
 
     // Full-text search
     if (req.query.search) {
-      filter.$text = { $search: req.query.search };
+      baseFilter.$text = { $search: req.query.search };
     }
 
     // Tag filter
     if (req.query.tag) {
-      filter.tags = req.query.tag;
+      baseFilter.tags = req.query.tag;
     }
 
-    // Public/private filter
+    // Public/private filter (only applies to owned notes)
     if (req.query.isPublic !== undefined) {
-      filter.isPublic = req.query.isPublic === 'true';
+      baseFilter.isPublic = req.query.isPublic === 'true';
     }
 
     // Sorting
@@ -61,14 +69,29 @@ async function getNotes(req, res, next) {
     };
     const sort = sortMap[req.query.sort] || { isPinned: -1, updatedAt: -1 };
 
-    const [notes, total] = await Promise.all([
-      Note.find(filter)
+    const [rawNotes, total] = await Promise.all([
+      Note.find(baseFilter)
           .sort(sort)
           .skip(skip)
           .limit(limit)
-          .select('-sharedWith'),
-      Note.countDocuments(filter),
+          .populate('owner', 'username avatar')
+          .populate('sharedWith.user', 'username avatar'),
+      Note.countDocuments(baseFilter),
     ]);
+
+    // Tag each note with whether it's owned or shared-with-me, and the permission
+    const notes = rawNotes.map((note) => {
+      const obj = note.toObject();
+      const isOwner = note.owner._id.toString() === userId.toString();
+      obj.isSharedWithMe = !isOwner;
+      if (!isOwner) {
+        const entry = note.sharedWith.find((s) => s.user?._id?.toString() === userId.toString());
+        obj.myPermission = entry?.permission || 'read';
+      }
+      // Remove sharedWith detail for non-owners
+      if (!isOwner) delete obj.sharedWith;
+      return obj;
+    });
 
     return sendSuccess(res, {
       notes,
@@ -138,18 +161,33 @@ async function createNote(req, res, next) {
 
 /**
  * PUT /api/notes/:id
- * Owner-only update.
+ * Owner can update all fields.
+ * Users with 'write' share permission can update title and content only.
  */
 async function updateNote(req, res, next) {
   try {
-    const note = await Note.findOne({ _id: req.params.id, owner: req.user._id });
+    const userId = req.user._id.toString();
+    const note = await Note.findById(req.params.id);
 
     if (!note) return sendError(res, 'Note not found or access denied', 404);
 
-    const allowedFields = ['title', 'content', 'tags', 'isPublic', 'color', 'isPinned'];
-    allowedFields.forEach((field) => {
-      if (req.body[field] !== undefined) note[field] = req.body[field];
-    });
+    const isOwner = note.owner.toString() === userId;
+    const sharedEntry = note.sharedWith.find((s) => s.user?.toString() === userId);
+    const canWrite = isOwner || sharedEntry?.permission === 'write';
+
+    if (!canWrite) return sendError(res, 'Access denied', 403);
+
+    if (isOwner) {
+      // Owner can update everything
+      const allowedFields = ['title', 'content', 'tags', 'isPublic', 'color', 'isPinned'];
+      allowedFields.forEach((field) => {
+        if (req.body[field] !== undefined) note[field] = req.body[field];
+      });
+    } else {
+      // Write-permission collaborator: title + content only
+      if (req.body.title   !== undefined) note.title   = req.body.title;
+      if (req.body.content !== undefined) note.content = req.body.content;
+    }
 
     await note.save();
     return sendSuccess(res, { note }, 'Note updated');

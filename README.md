@@ -121,6 +121,11 @@ Neither `.env` file is committed (see `.gitignore`) — create them locally. **N
 | `GEMINI_API_KEY` | optional | Enables `/api/ai/summarise`. Omitted → endpoint returns 503 |
 | `CLOUDINARY_URL` | optional | Format `cloudinary://<key>:<secret>@<cloud_name>`. Present → attachments upload to Cloudinary. Absent → falls back to local disk storage (not suitable for most production hosts — see [Production Deployment](#production-deployment)) |
 | `ATTACHMENT_ALLOWED_HOSTS` | optional | Comma-separated extra hostnames allowed when embedding attachment images in PDF exports (SSRF allowlist). Cloudinary and localhost are allowed by default |
+| `EMAIL_HOST` | optional | SMTP host for share notifications (e.g. `smtp.gmail.com`). Omitted → email notifications are skipped silently |
+| `EMAIL_PORT` | optional | SMTP port (default `587`) |
+| `EMAIL_SECURE` | optional | Set `true` for port 465 TLS, leave unset for STARTTLS (port 587) |
+| `EMAIL_USER` | optional | SMTP login / sender address (e.g. your Gmail address) |
+| `EMAIL_PASS` | optional | SMTP password. **For Gmail: use an App Password**, not your account password — generate one at myaccount.google.com → Security → 2-Step Verification → App passwords |
 
 ### `client/.env`
 

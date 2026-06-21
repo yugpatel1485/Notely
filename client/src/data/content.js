@@ -46,12 +46,12 @@ export const MARQUEE_ITEMS = [
 ];
 
 export const FEATURES = [
-  { num: '01', icon: '🔐', name: 'Secure Auth',      desc: 'JWT-based login with bcrypt password hashing and token expiration. Your account, locked down.',              corner: 'Auth →'       },
-  { num: '02', icon: '📝', name: 'Rich Notes',       desc: 'Create, edit, and delete notes with tags, markdown support, and a clean writing interface.',                  corner: 'Write →'      },
-  { num: '03', icon: '🔗', name: 'Share Anywhere',   desc: 'Generate public or private links. Control exactly who sees what, anytime.',                                   corner: 'Share →'      },
-  { num: '04', icon: '⚡', name: 'Real-time Collab', desc: 'Socket.io-powered live editing. Work together without stepping on each other\'s toes.',                        corner: 'Collab →'     },
-  { num: '05', icon: '🔍', name: 'Search & Filter',  desc: 'Find any note instantly. Filter by tags, date, or sharing status — results in milliseconds.',                  corner: 'Search →'     },
-  { num: '06', icon: '🤖', name: 'AI Summaries',     desc: 'Too much to read? Get a sharp, one-paragraph AI-generated summary of any note.',                              corner: 'Summarize →'  },
+  { num: '01', icon: 'lock',    name: 'Secure Auth',      desc: 'JWT-based login with bcrypt password hashing and token expiration. Your account, locked down.',              corner: 'Auth →'       },
+  { num: '02', icon: 'note',    name: 'Rich Notes',       desc: 'Create, edit, and delete notes with tags, markdown support, and a clean writing interface.',                  corner: 'Write →'      },
+  { num: '03', icon: 'share',   name: 'Share Anywhere',   desc: 'Generate public or private links. Control exactly who sees what, anytime.',                                   corner: 'Share →'      },
+  { num: '04', icon: 'bolt',    name: 'Real-time Collab', desc: 'Socket.io-powered live editing. Work together without stepping on each other\'s toes.',                        corner: 'Collab →'     },
+  { num: '05', icon: 'search',  name: 'Search & Filter',  desc: 'Find any note instantly. Filter by tags, date, or sharing status — results in milliseconds.',                  corner: 'Search →'     },
+  { num: '06', icon: 'ai',      name: 'AI Summaries',     desc: 'Too much to read? Get a sharp, one-paragraph AI-generated summary of any note.',                              corner: 'Summarize →'  },
 ];
 
 export const STACK_ITEMS = [

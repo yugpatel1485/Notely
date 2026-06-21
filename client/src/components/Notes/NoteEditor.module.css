@@ -76,6 +76,40 @@
 .aiBtn:hover    { border-color: var(--ink); color: var(--ink); }
 .aiBtnActive    { background: var(--ink-inverse); color: var(--paper-inverse) !important; border-color: var(--ink-inverse) !important; }
 
+.sharedByTag {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  padding: 0.3rem 0.65rem;
+  white-space: nowrap;
+}
+.sharedByTag strong { color: var(--ink); font-weight: 600; }
+
+.sharedByAvatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.sharedByInitial {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent2, #4a7c6f);
+  color: #fff;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
 .closeBtn {
   background: none;
   border: none;

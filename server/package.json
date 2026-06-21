@@ -1,7 +1,7 @@
 {
   "name": "notely-server",
   "version": "3.0.0",
-  "description": "Notely MERN backend \u2014 Phase 3: file uploads, version history, export, analytics",
+  "description": "Notely MERN backend — Phase 3: file uploads, version history, export, analytics",
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
@@ -23,6 +23,7 @@
     "mongoose": "^9.6.2",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
+    "nodemailer": "^9.0.1",
     "nodemon": "^3.1.14",
     "pdfkit": "^0.15.2",
     "socket.io": "^4.8.1"

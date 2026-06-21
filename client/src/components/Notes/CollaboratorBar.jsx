@@ -7,23 +7,35 @@
 
 import styles from './CollaboratorBar.module.css';
 
-function Avatar({ user, index }) {
+// Show usernames when ≤ this many people are present
+const USERNAME_THRESHOLD = 3;
+
+function Avatar({ user, index, showName }) {
   const initial = user.username?.[0]?.toUpperCase() ?? '?';
   return (
     <div
-      className={styles.avatar}
-      style={{ zIndex: 10 - index, '--hue': (user.userId?.charCodeAt(0) ?? 0) % 360 }}
+      className={`${styles.avatarWrap} ${showName ? styles.avatarWithName : ''}`}
       title={user.username}
     >
-      {user.avatar
-        ? <img src={user.avatar} alt={user.username} />
-        : <span>{initial}</span>
-      }
+      <div
+        className={styles.avatar}
+        style={{ zIndex: 10 - index, '--hue': (user.userId?.charCodeAt(0) ?? 0) % 360 }}
+      >
+        {user.avatar
+          ? <img src={user.avatar} alt={user.username} />
+          : <span>{initial}</span>
+        }
+      </div>
+      {showName && (
+        <span className={styles.username}>{user.username}</span>
+      )}
     </div>
   );
 }
 
 export default function CollaboratorBar({ collaborators = [], isConnected }) {
+  const showNames = collaborators.length <= USERNAME_THRESHOLD;
+
   return (
     <div className={styles.bar}>
       {/* Connection status */}
@@ -33,9 +45,9 @@ export default function CollaboratorBar({ collaborators = [], isConnected }) {
 
       {/* Avatar stack */}
       {collaborators.length > 0 && (
-        <div className={styles.avatars}>
+        <div className={`${styles.avatars} ${showNames ? styles.avatarsSpaced : ''}`}>
           {collaborators.slice(0, 6).map((c, i) => (
-            <Avatar key={c.userId} user={c} index={i} />
+            <Avatar key={c.userId} user={c} index={i} showName={showNames} />
           ))}
           {collaborators.length > 6 && (
             <div className={`${styles.avatar} ${styles.overflow}`}>

@@ -13,6 +13,61 @@ const Note              = require('../models/Note');
 const User              = require('../models/User');
 const { sendSuccess,
         sendError }     = require('../utils/response');
+const nodemailer        = require('nodemailer');
+
+// ── Email helper ──────────────────────────────────────────────────────────────
+function createTransporter() {
+  // Supports any SMTP provider. Set EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS in .env
+  // For Gmail: EMAIL_HOST=smtp.gmail.com, EMAIL_PORT=587, use an App Password
+  return nodemailer.createTransport({
+    host:   process.env.EMAIL_HOST   || 'smtp.gmail.com',
+    port:   parseInt(process.env.EMAIL_PORT || '587', 10),
+    secure: process.env.EMAIL_SECURE === 'true',  // true for port 465
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+}
+
+async function sendShareNotificationEmail({ toEmail, toUsername, fromUsername, noteTitle, noteId, permission }) {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.warn('[Share] EMAIL_USER or EMAIL_PASS not set — skipping email notification');
+    return;
+  }
+
+  const appUrl    = process.env.CLIENT_URL || 'http://localhost:5173';
+  const noteUrl   = `${appUrl}/dashboard`;   // User opens dashboard and sees the note in "Shared with me"
+  const permLabel = permission === 'write' ? 'view and edit' : 'view';
+
+  const html = `
+    <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:24px;border:1px solid #e5e7eb;border-radius:8px">
+      <h2 style="color:#1a1a1a;margin-top:0">📝 A note has been shared with you</h2>
+      <p style="color:#444"><strong>${fromUsername}</strong> shared the note <strong>"${noteTitle}"</strong> with you on Notely.</p>
+      <p style="color:#444">You have <strong>${permLabel}</strong> access.</p>
+      <a href="${noteUrl}" style="display:inline-block;margin:16px 0;padding:12px 24px;background:#4f46e5;color:#fff;border-radius:6px;text-decoration:none;font-weight:600">
+        Open in Notely →
+      </a>
+      <p style="color:#888;font-size:13px">The note will appear in the <em>Shared with me</em> section of your dashboard.</p>
+      <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0">
+      <p style="color:#aaa;font-size:12px">You received this because someone shared a note with your Notely account (${toEmail}).</p>
+    </div>
+  `;
+
+  try {
+    const transporter = createTransporter();
+    await transporter.sendMail({
+      from:    `"Notely" <${process.env.EMAIL_USER}>`,
+      to:      toEmail,
+      subject: `${fromUsername} shared a note with you: "${noteTitle}"`,
+      html,
+    });
+    console.log(`[Share] Email sent to ${toEmail}`);
+  } catch (err) {
+    // Non-fatal — sharing still succeeds, email just didn't send
+    console.error('[Share] Failed to send email notification:', err.message);
+  }
+}
 
 /**
  * POST /api/notes/:id/share-with
@@ -60,6 +115,16 @@ async function shareWithUser(req, res, next) {
 
     note.sharedWith.push({ user: target._id, permission });
     await note.save();
+
+    // Send email notification (non-blocking — failure doesn't break the share)
+    sendShareNotificationEmail({
+      toEmail:      target.email,
+      toUsername:   target.username,
+      fromUsername: req.user.username || req.user.email,
+      noteTitle:    note.title,
+      noteId:       note._id.toString(),
+      permission,
+    });
 
     return sendSuccess(res, {
       sharedWith: { user: { _id: target._id, username: target.username, avatar: target.avatar }, permission },

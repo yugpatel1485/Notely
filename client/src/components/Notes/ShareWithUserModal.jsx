@@ -56,6 +56,20 @@ export default function ShareWithUserModal({ noteId, onClose }) {
     }
   }
 
+  // ── Change permission ─────────────────────────────────────────────────────
+  async function handleChangePermission(userId, username, newPermission) {
+    try {
+      await api.post(`/notes/${noteId}/share-with`, {
+        email: collaborators.find(c => c.user._id === userId)?.user.email,
+        permission: newPermission,
+      });
+      setMessage({ type: 'success', text: `Updated ${username}'s access to ${newPermission}` });
+      loadCollaborators();
+    } catch (err) {
+      setMessage({ type: 'error', text: err.response?.data?.message || 'Failed to update permission' });
+    }
+  }
+
   // ── Revoke ────────────────────────────────────────────────────────────────
   async function handleRevoke(userId, username) {
     if (!window.confirm(`Remove ${username}'s access?`)) return;
@@ -139,7 +153,15 @@ export default function ShareWithUserModal({ noteId, onClose }) {
                     </div>
                   </div>
                   <div className={styles.itemRight}>
-                    <span className={styles.permBadge}>{perm}</span>
+                    <select
+                      className={styles.permSelect}
+                      value={perm}
+                      onChange={(e) => handleChangePermission(user._id, user.username, e.target.value)}
+                      title="Change permission"
+                    >
+                      <option value="read">Read</option>
+                      <option value="write">Write</option>
+                    </select>
                     <button
                       className={styles.revokeBtn}
                       onClick={() => handleRevoke(user._id, user.username)}

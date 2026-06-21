@@ -45,9 +45,36 @@ export default function NoteCard({ note, onClick, onDelete }) {
             <span key={tag} className={styles.tag}>{tag}</span>
           ))}
         </div>
-        <span className={`${styles.badge} ${note.isPublic ? styles.badgePublic : styles.badgePrivate}`}>
-          {note.isPublic ? 'Public' : 'Private'}
-        </span>
+        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+          {note.isSharedWithMe && (
+            <span
+              className={`${styles.badge} ${styles.badgeShared}`}
+              title={`Shared with you (${note.myPermission || 'read'} access)`}
+            >
+              Shared
+            </span>
+          )}
+          {!note.isSharedWithMe && (
+            <span className={`${styles.badge} ${note.isPublic ? styles.badgePublic : styles.badgePrivate}`}>
+              {note.isPublic ? 'Public' : 'Private'}
+            </span>
+          )}
+          {/* Owner indicator: note has collaborators */}
+          {!note.isSharedWithMe && note.sharedWith?.length > 0 && (
+            <span
+              className={styles.sharedOutIcon}
+              title={`Shared with: ${note.sharedWith.map(s => s.user?.username).join(', ')}`}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+              {note.sharedWith.length}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Title */}
@@ -71,14 +98,16 @@ export default function NoteCard({ note, onClick, onDelete }) {
               {note.attachments.length} {note.attachments.length === 1 ? 'file' : 'files'}
             </span>
           )}
-          <button
-            className={styles.deleteBtn}
-            onClick={handleDeleteClick}
-            aria-label="Delete note"
-            title="Delete note"
-          >
-            ✕
-          </button>
+          {!note.isSharedWithMe && (
+            <button
+              className={styles.deleteBtn}
+              onClick={handleDeleteClick}
+              aria-label="Delete note"
+              title="Delete note"
+            >
+              ✕
+            </button>
+          )}
         </div>
       </div>
     </article>

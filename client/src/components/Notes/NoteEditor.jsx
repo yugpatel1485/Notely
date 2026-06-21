@@ -111,6 +111,7 @@ const TABS = [
 export default function NoteEditor({ note, onClose }) {
   const { createNote, updateNote, isSaving } = useNotes();
   const isEditing = Boolean(note?._id);
+  const isSharedReadOnly = isEditing && note?.isSharedWithMe && note?.myPermission !== 'write';
 
   const [form, setForm] = useState({
     title:    note?.title    || '',
@@ -245,7 +246,11 @@ export default function NoteEditor({ note, onClose }) {
   }
 
   return (
-    <div className={styles.backdrop} onClick={(e) => e.target === e.currentTarget && onClose()}>
+    <div
+      className={styles.backdrop}
+      onMouseDown={(e) => { if (e.target === e.currentTarget) e.currentTarget.dataset.closing = 'true'; }}
+      onMouseUp={(e) => { if (e.target === e.currentTarget && e.currentTarget.dataset.closing === 'true') onClose(); delete e.currentTarget.dataset.closing; }}
+    >
       <div className={styles.modal} style={{ '--editor-bg': form.color }}>
 
         {/* ── Header ─────────────────────────────────────────────────── */}
@@ -255,7 +260,16 @@ export default function NoteEditor({ note, onClose }) {
             {isEditing && (
               <ExportMenu noteId={note._id} disabled={isSaving} />
             )}
-            {isEditing && (
+            {isEditing && note?.isSharedWithMe && note?.owner && (
+              <span className={styles.sharedByTag}>
+                {note.owner.avatar
+                  ? <img src={note.owner.avatar} alt={note.owner.username} className={styles.sharedByAvatar} />
+                  : <span className={styles.sharedByInitial}>{note.owner.username?.[0]?.toUpperCase()}</span>
+                }
+                Shared by <strong>{note.owner.username}</strong>
+              </span>
+            )}
+            {isEditing && !note?.isSharedWithMe && (
               <button className={styles.shareBtn} onClick={() => setShowShare(true)}>
                 Share
               </button>
@@ -303,6 +317,7 @@ export default function NoteEditor({ note, onClose }) {
             onChange={handleChange}
             maxLength={200}
             required
+            readOnly={isSharedReadOnly}
           />
 
           {/* Content tabs */}
@@ -331,6 +346,7 @@ export default function NoteEditor({ note, onClose }) {
               value={form.content}
               onChange={handleChange}
               rows={10}
+              readOnly={isSharedReadOnly}
             />
           )}
 
@@ -418,10 +434,18 @@ export default function NoteEditor({ note, onClose }) {
 
           {/* Actions */}
           <div className={styles.actions}>
-            <button type="button" className={styles.btnGhost} onClick={onClose}>Cancel</button>
-            <button type="submit" className={styles.btnPrimary} disabled={isSaving || uploadingPending}>
-              {uploadingPending ? 'Uploading…' : isSaving ? 'Saving…' : isEditing ? 'Save changes →' : 'Create note →'}
+            <button type="button" className={styles.btnGhost} onClick={onClose}>
+              {isSharedReadOnly ? 'Close' : 'Cancel'}
             </button>
+            {isSharedReadOnly ? (
+              <span style={{ fontSize: '13px', color: '#888', alignSelf: 'center' }}>
+                👁 View only — you have read access
+              </span>
+            ) : (
+              <button type="submit" className={styles.btnPrimary} disabled={isSaving || uploadingPending}>
+                {uploadingPending ? 'Uploading…' : isSaving ? 'Saving…' : isEditing ? 'Save changes →' : 'Create note →'}
+              </button>
+            )}
           </div>
         </form>
 

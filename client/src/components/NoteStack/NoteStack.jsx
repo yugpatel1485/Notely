@@ -6,21 +6,21 @@ import styles from './NoteStack.module.css';
 const NOTES = [
   {
     tag: 'Research', tagColor: '#c8502a', tagBg: '#fce8e2',
-    tint: '#ffffff',
+    tint: { light: '#ffffff',  dark: '#ffffff' },
     title: 'MERN Stack Architecture Notes',
     body: 'MongoDB + Express + React + Node. Full-stack JavaScript. REST APIs connected to a cloud database...',
     status: 'Private', dotColor: '#c8502a', date: 'Today',
   },
   {
     tag: 'Ideas', tagColor: '#c8502a', tagBg: '#fce8e2',
-    tint: '#f0ede3',
+    tint: { light: '#f0ede3',  dark: '#f0ede3' },
     title: 'Feature brainstorm — v2',
     body: 'Real-time collab via Socket.io, AI summaries, version history, offline support...',
     status: 'Shared', dotColor: '#c8502a', date: 'Yesterday',
   },
   {
     tag: 'Team', tagColor: '#3a5c4e', tagBg: '#ddeee7',
-    tint: '#e8f0ec',
+    tint: { light: '#e8f0ec',  dark: '#e8f0ec' },
     title: 'API Endpoints Reference',
     body: 'GET /api/notes · POST /api/notes · PUT /api/notes/:id · DELETE /api/notes/:id',
     status: 'Public', dotColor: '#3a5c4e', date: '3 days ago',
@@ -32,9 +32,9 @@ const NOTES = [
  * zIndex is written separately so CSS transitions don't fight it.
  */
 const SLOTS = [
-  { top: 150, left: 50,  rotate: -1,   opacity: 1,    zIndex: 3 }, // 0 = front
-  { top: 70,  left: 10,  rotate: 1.5,  opacity: 0.9,  zIndex: 2 }, // 1 = mid
-  { top: 0,   left: 40,  rotate: -3,   opacity: 0.75, zIndex: 1 }, // 2 = back
+  { top: 150, left: 50,  rotate: -1,   opacity: 1, zIndex: 3 }, // 0 = front
+  { top: 70,  left: 10,  rotate: 1.5,  opacity: 1, zIndex: 2 }, // 1 = mid
+  { top: 0,   left: 40,  rotate: -3,   opacity: 1, zIndex: 1 }, // 2 = back
 ];
 
 /*
@@ -54,15 +54,19 @@ const TRANSITIONS = [
 /* ─── DOM helpers ───────────────────────────────────────────────── */
 
 function buildCard(note) {
+  const isDark   = document.documentElement.getAttribute('data-theme') === 'dark';
+  const tint     = isDark ? note.tint.dark : note.tint.light;
+  const titleClr = '#1a1a1a';
+  const bodyClr  = '#888888';
   const el = document.createElement('article');
   el.className = styles.card;
-  el.style.cssText = `background:${note.tint};position:absolute;`;
+  el.style.cssText = `background:${tint};position:absolute;`;
   el.innerHTML = `
     <span class="${styles.tag}" style="color:${note.tagColor};background:${note.tagBg}">${note.tag}</span>
-    <h3 class="${styles.title}">${note.title}</h3>
-    <p class="${styles.body}">${note.body}</p>
+    <h3 class="${styles.title}" style="color:${titleClr}">${note.title}</h3>
+    <p class="${styles.body}" style="color:${bodyClr}">${note.body}</p>
     <hr class="${styles.divider}">
-    <footer class="${styles.meta}">
+    <footer class="${styles.meta}" style="color:${bodyClr}">
       <span><span class="${styles.dot}" style="background:${note.dotColor}"></span>${note.status}</span>
       <span>${note.date}</span>
     </footer>`;
@@ -122,6 +126,12 @@ export default function NoteStack() {
       wrap.appendChild(card);
     });
 
+    /* Re-render cards if the user switches theme while on the page */
+    const themeObserver = new MutationObserver(() => {
+      // Tints are always light regardless of theme — nothing to update
+    });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
     function handleClick(e) {
       const card = e.target.closest('article');
       if (!card || busy) return;
@@ -168,6 +178,7 @@ export default function NoteStack() {
     wrap.addEventListener('click', handleClick);
     return () => {
       wrap.removeEventListener('click', handleClick);
+      themeObserver.disconnect();
       cards.forEach(c => c.remove());
     };
   }, []);

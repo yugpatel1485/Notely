@@ -34,6 +34,32 @@
   align-items: center;
 }
 
+.avatarsSpaced {
+  gap: 0.5rem;
+}
+
+/* Wraps avatar + optional username label */
+.avatarWrap {
+  display: flex;
+  align-items: center;
+  margin-left: -8px;
+}
+
+.avatarWrap:first-child { margin-left: 0; }
+
+.avatarWithName {
+  margin-left: 0;
+  gap: 0.4rem;
+}
+
+.username {
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  color: var(--ink);
+  white-space: nowrap;
+  font-weight: 500;
+}
+
 .avatar {
   width: 28px;
   height: 28px;
