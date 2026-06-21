@@ -1,0 +1,96 @@
+.stack {
+  position: relative;
+  width: 300px;
+  height: 380px;
+}
+
+/* ── Card base ─────────────────────────────────────────────────── */
+.card {
+  position: absolute;
+  width: 260px;
+  border: 1px solid var(--line);
+  padding: 1.6rem;
+  box-shadow: 4px 6px 24px rgba(0, 0, 0, 0.06);
+  cursor: none;
+  /* will-change tells the compositor to promote each card to its own
+     layer, so top/left/transform/opacity animate on the GPU with
+     zero main-thread involvement and no layout thrashing. */
+  will-change: top, left, transform, opacity;
+}
+
+/* ── Content ───────────────────────────────────────────────────── */
+.tag {
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+}
+
+.title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1rem;
+  line-height: 1.35;
+  color: var(--ink);
+  margin-bottom: 0.6rem;
+  font-weight: 400;
+}
+
+.body {
+  font-size: 0.68rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.divider {
+  height: 1px;
+  background: var(--line);
+  border: none;
+  margin: 0.8rem 0;
+}
+
+.meta {
+  font-size: 0.6rem;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+/* ── Hint ──────────────────────────────────────────────────────── */
+.hint {
+  position: absolute;
+  bottom: -28px;
+  left: 50px;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  opacity: 0;
+  animation: fadeIn 1s ease 2s forwards;
+  pointer-events: none;
+}
+
+.hint::before {
+  content: '';
+  display: block;
+  width: 16px;
+  height: 1px;
+  background: var(--muted);
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}

@@ -1,0 +1,18 @@
+/* Base resets — dashboard layout needs full-width root */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Landing page constrains width via its own layout */
+/* Dashboard uses full viewport */
+#root {
+  min-height: 100svh;
+}

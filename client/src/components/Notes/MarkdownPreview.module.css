@@ -1,0 +1,129 @@
+/* MarkdownPreview.module.css */
+
+.preview {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--ink);
+  word-break: break-word;
+  padding: 0.25rem 0;
+  font-family: var(--font-mono);
+}
+
+.preview.empty {
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* Headings */
+.preview :global(h1),
+.preview :global(h2),
+.preview :global(h3),
+.preview :global(h4),
+.preview :global(h5),
+.preview :global(h6) {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  line-height: 1.3;
+  margin: 1em 0 0.35em;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+
+.preview :global(h1) { font-size: 1.6rem; }
+.preview :global(h2) { font-size: 1.35rem; }
+.preview :global(h3) { font-size: 1.15rem; }
+.preview :global(h4),
+.preview :global(h5),
+.preview :global(h6) { font-size: 1rem; }
+
+/* Paragraphs */
+.preview :global(p) { margin: 0.6em 0; }
+
+/* Lists */
+.preview :global(ul),
+.preview :global(ol) {
+  padding-left: 1.5rem;
+  margin: 0.5em 0;
+}
+.preview :global(li) { margin: 0.2em 0; }
+
+/* Inline code */
+.preview :global(code) {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--tag-bg);
+  color: var(--ink);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+  border: 1px solid var(--line);
+}
+
+/* Code blocks — intentionally dark regardless of theme */
+.preview :global(pre) {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 0.75em 0;
+  border: 1px solid #333;
+}
+.preview :global(pre) :global(code) {
+  background: none;
+  padding: 0;
+  font-size: 0.875rem;
+  color: inherit;
+  border: none;
+}
+
+/* Blockquote */
+.preview :global(blockquote) {
+  border-left: 3px solid var(--accent2);
+  margin: 0.75em 0;
+  padding: 0.4em 0 0.4em 1rem;
+  color: var(--muted);
+  font-style: italic;
+  background: rgba(74, 124, 111, 0.05);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+/* Links */
+.preview :global(a) {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.preview :global(a:hover) { opacity: 0.8; }
+
+/* Horizontal rule */
+.preview :global(hr) {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 1em 0;
+}
+
+/* Emphasis */
+.preview :global(strong) { font-weight: 700; }
+.preview :global(em)     { font-style: italic; }
+.preview :global(del)    { text-decoration: line-through; opacity: 0.6; }
+
+/* Tables */
+.preview :global(table) {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  margin: 0.75em 0;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+}
+.preview :global(th),
+.preview :global(td) {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line);
+  text-align: left;
+}
+.preview :global(th) {
+  background: var(--cream);
+  font-weight: 500;
+  color: var(--ink);
+}

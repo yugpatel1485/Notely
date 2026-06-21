@@ -1,0 +1,198 @@
+/* AuthPage.module.css — Login & Register */
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  padding: 2rem 1rem;
+  font-family: var(--font-mono);
+  position: relative;
+}
+
+/* Subtle grid background */
+.page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+.card {
+  position: relative;
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: var(--shadow-card);
+  z-index: 1;
+}
+
+.logo {
+  display: inline-block;
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: var(--ink);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  font-weight: 400;
+  color: var(--ink);
+  letter-spacing: -0.03em;
+  margin: 0 0 0.25rem;
+}
+
+.sub {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin: 0 0 1.5rem;
+  letter-spacing: 0.02em;
+}
+
+/* ── Error banner ─────────────────────────────────────────────────────────── */
+.errorBanner {
+  background: rgba(200, 80, 42, 0.08);
+  border: 1px solid rgba(200, 80, 42, 0.3);
+  color: var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.9rem;
+  font-size: 0.78rem;
+  margin-bottom: 1.25rem;
+  line-height: 1.4;
+}
+
+/* ── Form ─────────────────────────────────────────────────────────────────── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.label {
+  font-size: 0.72rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.input {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--ink);
+  transition: border-color var(--t-fast), background var(--t-fast);
+  outline: none;
+  width: 100%;
+}
+
+.input::placeholder { color: var(--muted); }
+
+.input:focus {
+  border-color: var(--accent2);
+  background: var(--input-bg);
+}
+
+.hint {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-top: 0.1rem;
+}
+
+/* ── Submit button ────────────────────────────────────────────────────────── */
+.btnPrimary {
+  margin-top: 0.5rem;
+  background: var(--ink-inverse);
+  color: var(--paper-inverse);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: opacity var(--t-fast), transform 0.1s;
+  width: 100%;
+}
+
+.btnPrimary:hover:not(:disabled)  { opacity: 0.85; }
+.btnPrimary:active:not(:disabled) { transform: scale(0.99); }
+.btnPrimary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Switch link ──────────────────────────────────────────────────────────── */
+.switch {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.switchLink {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.switchLink:hover { color: var(--accent); }
+
+/* ── Auth splash (loading screen) ────────────────────────────────────────── */
+:global(.auth-splash) {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  background: var(--bg);
+  font-family: var(--font-mono);
+}
+
+:global(.auth-splash__logo) {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  color: var(--ink);
+  letter-spacing: -0.03em;
+}
+
+:global(.auth-splash__spinner) {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--line);
+  border-top-color: var(--ink);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .card {
+    padding: 1.75rem 1.25rem;
+    border-radius: var(--radius-md);
+  }
+  .title { font-size: 1.5rem; }
+}

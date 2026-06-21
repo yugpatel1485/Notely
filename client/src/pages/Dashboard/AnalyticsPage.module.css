@@ -1,0 +1,315 @@
+/* AnalyticsPage.module.css */
+
+.page {
+  font-family: var(--font-mono);
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.pageHeader {
+  margin-top: 1rem;
+  margin-bottom: 2.5rem; /* Room below subtitle */
+}
+
+.pageTitle {
+  font-family: var(--font-serif);
+  font-size: 2.2rem;
+  font-weight: 400;
+  color: var(--ink);
+  letter-spacing: -0.04em;
+  margin: 0 0 0.5rem; /* Room between title and subtitle */
+}
+
+.pageSub {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+/* ── Overview cards ─────────────────────────────────────────────────────── */
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.statCard {
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  box-shadow: var(--shadow-card);
+}
+
+.statValue {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  color: var(--ink);
+  line-height: 1;
+  font-weight: 500;
+}
+
+.statInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.statLabel {
+  font-size: 0.65rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.statSub {
+  font-size: 0.65rem;
+  color: var(--muted);
+  text-transform: lowercase;
+  opacity: 0.8;
+  letter-spacing: 0.02em;
+}
+
+/* ── Two-column grid ────────────────────────────────────────────────────── */
+.chartsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.chartCard {
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-card);
+}
+
+.chartTitle {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: var(--ink);
+  margin: 0 0 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+/* ── Top Tags Progress Bars ─────────────────────────────────────────────── */
+.tagBars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.tagBarRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.78rem;
+}
+
+.tagBarLabel {
+  width: 90px;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
+.tagBarTrack {
+  flex: 1;
+  height: 8px;
+  background: var(--tag-bg);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.tagBarFill {
+  height: 100%;
+  background: var(--accent2);
+  border-radius: 4px;
+  transition: width 0.5s ease-out;
+}
+
+.tagBarCount {
+  width: 24px;
+  text-align: right;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+/* ── Ranked & Activity Lists ────────────────────────────────────────────── */
+.rankList, .activityList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.rankItem, .activityItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.rankItem:last-child, .activityItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.rankNum {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: var(--accent);
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.rankTitle {
+  color: var(--ink);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rankViews {
+  color: var(--muted);
+  font-size: 0.7rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.activityInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.activityTitle {
+  color: var(--ink);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.activityDate {
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+
+.visBadge {
+  font-size: 0.65rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.visBadge.public {
+  background: rgba(74, 124, 111, 0.1);
+  color: var(--accent2);
+}
+
+.visBadge.private {
+  background: var(--tag-bg);
+  color: var(--muted);
+}
+
+/* ── Tooltip ────────────────────────────────────────────────────────────── */
+.tooltip {
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  box-shadow: var(--shadow-card);
+}
+
+.tooltipLabel {
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+
+.tooltipValue {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.empty {
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-align: center;
+  padding: 2rem 0;
+}
+
+/* ── Skeleton loading & spinner ─────────────────────────────────────────── */
+.loadingGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.skeleton {
+  height: 180px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, var(--tag-bg) 25%, var(--line) 50%, var(--tag-bg) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 4rem;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--line);
+  border-top-color: var(--ink);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .chartsGrid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .statGrid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 450px) {
+  .statGrid { grid-template-columns: 1fr; }
+}

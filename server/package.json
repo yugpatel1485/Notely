@@ -1,0 +1,30 @@
+{
+  "name": "notely-server",
+  "version": "3.0.0",
+  "description": "Notely MERN backend \u2014 Phase 3: file uploads, version history, export, analytics",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.10.0",
+    "cors": "^2.8.6",
+    "docx": "^9.5.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
+    "express-validator": "^7.2.1",
+    "helmet": "^8.0.0",
+    "image-size": "^1.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.6.2",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemon": "^3.1.14",
+    "pdfkit": "^0.15.2",
+    "socket.io": "^4.8.1"
+  }
+}

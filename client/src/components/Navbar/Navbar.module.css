@@ -1,0 +1,117 @@
+/* Navbar.module.css */
+
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4rem;
+  height: var(--navbar-height, 64px);
+  z-index: 50;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  /* Removed mix-blend-mode: multiply — breaks dark mode */
+}
+
+.logo {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.links {
+  display: flex;
+  gap: 2.5rem;
+  list-style: none;
+}
+
+.links a {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color var(--t-fast);
+}
+
+.links a:hover {
+  color: var(--ink);
+}
+
+/* ── Auth action buttons ──────────────────────────────────────────────────── */
+.authLinks {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btnGhost {
+  background: none;
+  border: 1px solid var(--input-border);
+  color: var(--ink);
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--t-fast), border-color var(--t-fast);
+  display: inline-flex;
+  align-items: center;
+}
+
+.btnGhost:hover {
+  background: var(--cream);
+  border-color: var(--ink);
+}
+
+.btnPrimary {
+  background: var(--ink-inverse);
+  color: var(--paper-inverse);
+  border: none;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-decoration: none;
+  transition: opacity var(--t-fast);
+  display: inline-flex;
+  align-items: center;
+}
+
+.btnPrimary:hover { opacity: 0.8; }
+
+.btnDash {
+  background: var(--accent2);
+  color: #fff;
+  border: none;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-decoration: none;
+  transition: opacity var(--t-fast);
+  display: inline-flex;
+  align-items: center;
+}
+
+.btnDash:hover { opacity: 0.85; }
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .nav { padding: 0 2rem; }
+}
+
+@media (max-width: 640px) {
+  .nav { padding: 0 1.25rem; }
+  .links { display: none; }
+  .authLinks { gap: 0.35rem; }
+  .btnGhost, .btnPrimary, .btnDash { padding: 0.4rem 0.65rem; font-size: 0.7rem; }
+}

@@ -1,0 +1,204 @@
+/* Hero.module.css */
+
+.hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: var(--navbar-height, 64px) 4rem 0;
+  padding-top: calc(var(--navbar-height, 64px) + 4rem);
+  position: relative;
+  overflow: hidden;
+  gap: 2rem;
+}
+
+/* ─── Left ───────────────────────────────────────────────── */
+.left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-bottom: 6rem;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeUp 0.9s ease 0.2s forwards;
+}
+
+.eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.eyebrow::before {
+  content: '';
+  display: block;
+  width: 28px;
+  height: 1px;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+.heading {
+  font-family: var(--font-serif);
+  font-size: clamp(2.8rem, 5.5vw, 5.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 2rem;
+  font-weight: 400;
+}
+
+.heading em {
+  font-style: italic;
+  color: var(--accent2);
+}
+
+.desc {
+  font-size: 0.875rem;
+  line-height: 1.85;
+  color: var(--muted);
+  max-width: 380px;
+  margin-bottom: 3rem;
+}
+
+.ctaGroup {
+  display: flex;
+  align-items: center;
+  gap: 1.8rem;
+  flex-wrap: wrap;
+}
+
+.btnPrimary {
+  background: var(--ink-inverse);
+  color: var(--paper-inverse);
+  padding: 0.85rem 2.2rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  border-radius: var(--radius-sm);
+}
+
+.btnPrimary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.btnPrimary:hover::after  { transform: translateX(0); }
+.btnPrimary:hover { text-decoration: none; }
+
+.btnPrimary span {
+  position: relative;
+  z-index: 1;
+}
+
+.btnGhost {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color var(--t-fast);
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: var(--font-mono);
+}
+
+.btnGhost:hover { color: var(--ink); }
+
+.arrow {
+  display: inline-block;
+  transition: transform 0.2s;
+}
+
+.btnGhost:hover .arrow { transform: translateX(5px); }
+
+/* ─── Right ──────────────────────────────────────────────── */
+.right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  opacity: 0;
+  animation: fadeIn 1.1s ease 0.5s forwards;
+}
+
+.bgCircle {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  border: 1px dashed var(--line);
+  top: 50%;
+  right: -100px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.bgCircle2 {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* ─── Keyframes ──────────────────────────────────────────── */
+@keyframes fadeUp  { to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn  { to { opacity: 1; } }
+
+/* ─── Responsive ─────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding: calc(var(--navbar-height, 64px) + 3rem) 2.5rem 4rem;
+    min-height: auto;
+    gap: 0;
+  }
+
+  .left { padding-bottom: 3rem; }
+
+  .right {
+    display: none; /* Decorative only — hide on tablet */
+  }
+}
+
+@media (max-width: 640px) {
+  .hero {
+    padding: calc(var(--navbar-height, 64px) + 2rem) 1.5rem 3rem;
+  }
+
+  .heading { font-size: clamp(2.2rem, 10vw, 3rem); }
+
+  .desc { font-size: 0.82rem; max-width: 100%; }
+
+  .ctaGroup {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.2rem;
+  }
+
+  .btnPrimary { width: 100%; text-align: center; padding: 0.9rem 1.5rem; }
+}

@@ -1,0 +1,247 @@
+/**
+ * globals.css — Notely Design System
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Single source of truth for all design tokens.
+ * Every surface, text, and interactive element uses these variables.
+ */
+
+/* ── Google Fonts ─────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Instrument+Serif:ital@0;1&display=swap');
+
+/* ══ Light palette (default) ══════════════════════════════════════════════════ */
+:root {
+  color-scheme: light;
+  /* Core palette */
+  --bg:     #f5f2e8;
+  --ink:    #111111;
+  --cream:  #edeadd;
+  --line:   #c8c3b4;
+  --muted:  #5a5a5a;        /* Raised from #555 — better contrast on cream */
+  --accent: #c8502a;
+
+  /* Surface tokens */
+  --card-bg:   #ffffff;
+  --modal-bg:  #ffffff;
+  --paper:     #f5f2e8;
+  --accent2:   #4a7c6f;
+
+  /* Sidebar / nav surface */
+  --sidebar-bg: #1e2128;    /* softer dark slate — less harsh than pure black in light mode */
+
+  /* Form-specific tokens — slightly stronger than --line for visible borders */
+  --input-bg:     #ffffff;
+  --input-border: #b8b3a4;
+
+  /* Tag / badge backgrounds */
+  --tag-bg:    rgba(14, 14, 14, 0.08);
+  --tag-text:  var(--ink);
+
+  /* Typography */
+  --font-mono:  'DM Mono', monospace;
+  --font-serif: 'Instrument Serif', serif;
+
+  /* Radius scale */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  /* Shadows */
+  --shadow-card:  0 2px 12px rgba(14, 14, 14, 0.07);
+  --shadow-modal: 0 20px 60px rgba(14, 14, 14, 0.18);
+
+  /* Transitions */
+  --t-fast:   0.15s ease;
+  --t-normal: 0.25s ease;
+
+  /* Layout */
+  --navbar-height: 64px;
+
+  /* Inverse tokens — always dark chip with light text regardless of theme */
+  --ink-inverse:   #111111;
+  --paper-inverse: #f5f2e8;
+}
+
+/* ══ Dark palette ═════════════════════════════════════════════════════════════ */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg:     #0f0f0f;
+  --ink:    #e8e4d9;
+  --cream:  #1a1a1a;
+  --line:   #2e2e2e;        /* Slightly lighter for visible dividers */
+  --muted:  #a0a0a0;        /* Raised from #888 — WCAG AA for small text */
+  --accent: #e8724a;
+
+  --card-bg:   #181818;     /* Slightly lighter than bg for visible cards */
+  --modal-bg:  #1e1e1e;
+
+  --paper:     #f5f2e8;
+  --accent2:   #5a9e8f;     /* Slightly lighter green for dark bg contrast */
+
+  --sidebar-bg: #111111;
+
+  /* Form tokens — brighter border for visibility against dark bg */
+  --input-bg:     #1e1e1e;
+  --input-border: #3e3e3e;  /* Was #2a2a2a via --line — now distinct */
+
+  /* Tag backgrounds visible on dark cards */
+  --tag-bg:   rgba(255, 255, 255, 0.1);
+  --tag-text: var(--ink);
+
+  /* Shadows */
+  --shadow-card:  0 2px 16px rgba(0, 0, 0, 0.35);
+  --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.5);
+
+  /* Inverse tokens - flip to light button / dark text in dark mode for visibility */
+  --ink-inverse:   #e8e4d9;
+  --paper-inverse: #111111;
+}
+
+/* ══ Reset + smooth theme transitions ═════════════════════════════════════════ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  transition:
+    background-color var(--t-normal),
+    border-color     var(--t-fast),
+    color            var(--t-fast),
+    fill             var(--t-fast),
+    stroke           var(--t-fast);
+}
+
+/* Opt-out for elements that manage their own transitions */
+.no-theme-transition,
+.no-theme-transition * {
+  transition: none !important;
+}
+
+/* ══ Base ══════════════════════════════════════════════════════════════════════ */
+html {
+  scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+}
+
+body {
+  background:              var(--bg);
+  color:                   var(--ink);
+  font-family:             var(--font-mono);
+  font-size:               16px;
+  line-height:             1.6;
+  -webkit-font-smoothing:  antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ══ Typography ════════════════════════════════════════════════════════════════ */
+h1, h2, h3, h4, h5, h6 {
+  font-family:    var(--font-serif);
+  font-weight:    400;
+  line-height:    1.15;
+  letter-spacing: -0.03em;
+  color:          var(--ink);
+}
+
+p, span, label, li, td, th {
+  color: inherit;
+}
+
+.text-muted {
+  color: var(--muted);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration:       underline;
+  text-underline-offset: 3px;
+}
+
+button {
+  font-family: var(--font-mono);
+  cursor:      pointer;
+}
+
+img, svg {
+  display:   block;
+  max-width: 100%;
+}
+
+/* ══ Scrollbar (WebKit) ════════════════════════════════════════════════════════ */
+::-webkit-scrollbar        { width: 6px; height: 6px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: var(--line); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* ══ Focus ring ════════════════════════════════════════════════════════════════ */
+:focus-visible {
+  outline:        2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius:  var(--radius-sm);
+}
+
+/* ══ Selection ═════════════════════════════════════════════════════════════════ */
+::selection {
+  background: var(--ink);
+  color:      var(--bg);
+}
+
+/* ══ Utility classes ═══════════════════════════════════════════════════════════ */
+.sr-only {
+  position:   absolute;
+  width:      1px;
+  height:     1px;
+  padding:    0;
+  margin:     -1px;
+  overflow:   hidden;
+  clip:       rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border:     0;
+}
+
+.truncate {
+  overflow:      hidden;
+  text-overflow: ellipsis;
+  white-space:   nowrap;
+}
+
+/* ══ Inputs, Textareas & Selects ═══════════════════════════════════════════════
+   Key fixes:
+   - background: var(--input-bg)  → always a distinct surface (no transparent)
+   - border: var(--input-border)  → stronger than --line for visibility in dark mode
+   - color-scheme on select       → native OS dropdown renders correctly in dark mode
+   ─────────────────────────────────────────────────────────────────────────── */
+input,
+textarea,
+select {
+  background-color: var(--input-bg);
+  color:            var(--ink);
+  border:           1px solid var(--input-border);
+  border-radius:    var(--radius-sm);
+  font-family:      var(--font-mono);
+  font-size:        0.875rem;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  background-color: var(--input-bg);
+  border-color:     var(--accent2);
+  outline:          none;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color:   var(--muted);
+  opacity: 1;
+}
+
+input:disabled,
+textarea:disabled,
+select:disabled {
+  opacity: 0.5;
+  cursor:  not-allowed;
+}

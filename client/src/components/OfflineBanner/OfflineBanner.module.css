@@ -1,0 +1,81 @@
+/**
+ * OfflineBanner.module.css  (Phase 4 — Part 3)
+ */
+
+/* ── Base banner ─────────────────────────────────────────────────────────────── */
+.banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.45rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.01em;
+  animation: slideIn 0.22s ease;
+  /* Sit above any fixed headers */
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-100%); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
+/* ── Variants ────────────────────────────────────────────────────────────────── */
+.offline {
+  background: #1a1a1a;
+  color: #e8e4d9;
+  border-bottom: 1px solid #333;
+}
+
+[data-theme="dark"] .offline {
+  background: #0a0a0a;
+  border-bottom-color: #222;
+}
+
+.syncing {
+  background: #1a3a2a;
+  color: #a8e6c8;
+  border-bottom: 1px solid #2a5a3a;
+}
+
+.synced {
+  background: #1a3a1a;
+  color: #8fe68f;
+  border-bottom: 1px solid #2a5a2a;
+  animation: slideIn 0.22s ease, fadeOut 0.4s ease 2.5s forwards;
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; transform: translateY(-100%); }
+}
+
+/* ── Status dot ──────────────────────────────────────────────────────────────── */
+.dot {
+  width:  7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.offline .dot  { background: #ff6b6b; }
+.syncing .dot  {
+  background: #6be8a8;
+  animation: pulse 1s ease-in-out infinite;
+}
+.synced .dot   { background: #6be86b; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* ── Message ─────────────────────────────────────────────────────────────────── */
+.message {
+  line-height: 1;
+}

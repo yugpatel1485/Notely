@@ -1,0 +1,239 @@
+/* ShareWithUserModal.module.css */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 1rem;
+}
+
+.modal {
+  background: var(--modal-bg);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 480px;
+  box-shadow: var(--shadow-modal);
+  overflow: hidden;
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-weight: 400;
+  margin: 0;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: var(--muted);
+  line-height: 1;
+  padding: 0.25rem;
+  border-radius: var(--radius-sm);
+  transition: color var(--t-fast);
+}
+.closeBtn:hover { color: var(--ink); }
+
+.form {
+  padding: 1.25rem 1.5rem 0;
+}
+
+.inputRow {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.emailInput {
+  flex: 1;
+  min-width: 140px;
+  background: var(--input-bg);
+  color: var(--ink);
+  border: 1.5px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color var(--t-fast);
+}
+.emailInput:focus { border-color: var(--accent2); }
+
+.permSelect {
+  border: 1.5px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  background: var(--input-bg);
+  color: var(--ink);
+  cursor: pointer;
+  outline: none;
+  color-scheme: light dark;
+}
+
+.shareBtn {
+  background: var(--ink-inverse);
+  color: var(--paper-inverse);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity var(--t-fast);
+  min-height: 40px;
+}
+.shareBtn:hover:not(:disabled) { opacity: 0.85; }
+.shareBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.message {
+  font-family: var(--font-mono);
+  font-size: 0.825rem;
+  padding: 0.5rem 1.5rem 0;
+  margin: 0;
+}
+.msgSuccess { color: var(--accent2); }
+.msgError   { color: var(--accent); }
+
+.listSection {
+  padding: 1.25rem 1.5rem 1.5rem;
+}
+
+.listTitle {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin: 0 0 0.75rem;
+}
+
+.muted {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius-md);
+  background: var(--cream);
+  border: 1px solid var(--line);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--accent2);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.username {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin: 0;
+  color: var(--ink);
+}
+.userEmail {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.itemRight {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.permBadge {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: rgba(74, 124, 111, 0.15);
+  color: var(--accent2);
+  padding: 0.15em 0.55em;
+  border-radius: 999px;
+  border: 1px solid rgba(74, 124, 111, 0.2);
+}
+
+.revokeBtn {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--accent);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: var(--radius-sm);
+  transition: background var(--t-fast);
+}
+.revokeBtn:hover { background: rgba(200, 80, 42, 0.1); }
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .modal { border-radius: var(--radius-md); }
+  .header, .listSection { padding: 1rem 1.25rem; }
+  .form { padding: 1rem 1.25rem 0; }
+  .message { padding: 0.5rem 1.25rem 0; }
+  .inputRow { flex-direction: column; }
+  .emailInput { min-width: 0; }
+  .shareBtn { min-height: 44px; }
+}

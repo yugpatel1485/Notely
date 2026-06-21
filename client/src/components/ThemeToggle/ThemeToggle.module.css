@@ -1,0 +1,61 @@
+/**
+ * ThemeToggle.module.css  (Phase 4)
+ */
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem 0.1rem;
+  border-radius: 99px;
+  outline-offset: 3px;
+  transition: opacity 0.15s;
+}
+
+.toggle:hover { opacity: 0.75; }
+.toggle:focus-visible { outline: 2px solid var(--ink); }
+
+/* Sun / moon emoji icons */
+.icon {
+  font-size: 0.75rem;
+  color: rgba(244, 240, 232, 0.5);  /* always light — sidebar is always dark */
+  line-height: 1;
+  transition: color 0.2s;
+  user-select: none;
+}
+
+.icon.active {
+  color: #ffffff;
+}
+
+/* Pill track */
+.track {
+  display: inline-flex;
+  align-items: center;
+  width: 30px;
+  height: 16px;
+  background: var(--line);
+  border-radius: 99px;
+  padding: 2px;
+  transition: background 0.25s;
+  flex-shrink: 0;
+}
+
+/* Sliding thumb */
+.thumb {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: transform 0.22s cubic-bezier(.4,0,.2,1), background 0.2s;
+  will-change: transform;
+}
+
+.thumbDark {
+  transform: translateX(14px);
+  background: var(--ink);
+}
