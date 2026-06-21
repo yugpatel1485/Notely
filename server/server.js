@@ -38,13 +38,44 @@ const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 5000;
 
+// Render sits behind a single reverse-proxy hop. Without this,
+// express-rate-limit can't read X-Forwarded-For correctly (every request
+// looks like it comes from the proxy's own IP, so rate limiting either
+// breaks or collapses everyone into one bucket).
+app.set('trust proxy', 1);
+
+// CLIENT_URL may be a single origin or a comma-separated list — useful for
+// Vercel, where you typically have a stable production domain (your custom
+// domain or *.vercel.app) plus per-PR preview deployments with their own
+// generated subdomains.
+const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
+
 const corsOptions = {
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin(origin, callback) {
+    // Allow non-browser requests (curl, server-to-server, health checks)
+    // that send no Origin header at all.
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS: origin "${origin}" is not allowed`));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   exposedHeaders: ['Content-Disposition'],
 };
+
+// Local-disk attachment storage does not survive a Render redeploy or
+// restart (ephemeral filesystem) — Cloudinary is required once we're
+// actually live. Fail fast at boot rather than silently losing files later.
+if (process.env.NODE_ENV === 'production' && !process.env.CLOUDINARY_URL) {
+  console.error('[FATAL] CLOUDINARY_URL is not set. Local disk storage does not persist on Render — attachments would be lost on every deploy/restart.');
+  process.exit(1);
+}
 
 // ── Security ──────────────────────────────────────────────────────────────────
 app.use(helmet({

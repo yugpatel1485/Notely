@@ -2,6 +2,7 @@
 
 const crypto             = require('crypto');
 const Note               = require('../models/Note');
+const { cleanupNoteAttachments } = require('./uploadController');
 const { sendSuccess,
         sendError }      = require('../utils/response');
 
@@ -208,6 +209,8 @@ async function deleteNote(req, res, next) {
     });
 
     if (!note) return sendError(res, 'Note not found or access denied', 404);
+
+    if (note.attachments.length) await cleanupNoteAttachments(note);
 
     return sendSuccess(res, null, 'Note deleted');
   } catch (err) {

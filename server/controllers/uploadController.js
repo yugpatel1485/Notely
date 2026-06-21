@@ -276,4 +276,28 @@ async function deleteAttachment(req, res, next) {
   }
 }
 
-module.exports = { uploadAttachment, deleteAttachment };
+/**
+ * Best-effort cleanup of every attachment on a note (Cloudinary or local
+ * disk). Used when a note is deleted directly, and when a user's account
+ * is deleted (cascading through all of their owned notes). Never throws —
+ * a stuck/missing remote file shouldn't block the note/account deletion.
+ */
+async function cleanupNoteAttachments(note) {
+  for (const att of note.attachments) {
+    try {
+      if (USE_CLOUDINARY) {
+        const resourceType = att.resourceType || resourceTypeFor(att.mimetype);
+        await cloudinary.uploader.destroy(att.key, { resource_type: resourceType });
+      } else {
+        const target = path.resolve(UPLOAD_ROOT, att.key);
+        if (target.startsWith(path.resolve(UPLOAD_ROOT) + path.sep)) {
+          fs.unlink(target, () => {});
+        }
+      }
+    } catch (err) {
+      console.warn('[Upload] cleanup failed for attachment (continuing):', att.key, err.message);
+    }
+  }
+}
+
+module.exports = { uploadAttachment, deleteAttachment, cleanupNoteAttachments };

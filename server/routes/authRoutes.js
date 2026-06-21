@@ -3,11 +3,11 @@
 const express         = require('express');
 const rateLimit       = require('express-rate-limit');
 const {
-  register, login, getProfile, updateProfile, refreshToken,
+  register, login, getProfile, updateProfile, refreshToken, deleteAccount,
 }                     = require('../controllers/authController');
 const { protect }     = require('../middleware/auth');
 const {
-  registerRules, loginRules, validate,
+  registerRules, loginRules, deleteAccountRules, validate,
 }                     = require('../middleware/validate');
 
 const router = express.Router();
@@ -27,7 +27,8 @@ router.post('/login',    authLimiter, loginRules,    validate, login);
 router.post('/refresh',  authLimiter, refreshToken);
 
 // ── Protected routes ──────────────────────────────────────────────────────────
-router.get ('/profile', protect, getProfile);
-router.put ('/profile', protect, updateProfile);
+router.get   ('/profile', protect, getProfile);
+router.put   ('/profile', protect, updateProfile);
+router.delete('/account', protect, deleteAccountRules, validate, deleteAccount);
 
 module.exports = router;

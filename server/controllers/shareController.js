@@ -17,22 +17,25 @@ const nodemailer        = require('nodemailer');
 
 // ── Email helper ──────────────────────────────────────────────────────────────
 function createTransporter() {
-  // Supports any SMTP provider. Set EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS in .env
-  // For Gmail: EMAIL_HOST=smtp.gmail.com, EMAIL_PORT=587, use an App Password
+  // Supports any SMTP provider via env vars. Defaults are set up for Resend's
+  // free tier (https://resend.com — 100 emails/day, 3,000/month, no card
+  // required): SMTP user is literally "resend", password is your Resend API
+  // key. Gmail SMTP also works (EMAIL_HOST=smtp.gmail.com, port 587, with an
+  // App Password) but Gmail throttles/flags automated sends much sooner.
   return nodemailer.createTransport({
-    host:   process.env.EMAIL_HOST   || 'smtp.gmail.com',
+    host:   process.env.EMAIL_HOST   || 'smtp.resend.com',
     port:   parseInt(process.env.EMAIL_PORT || '587', 10),
     secure: process.env.EMAIL_SECURE === 'true',  // true for port 465
     auth: {
-      user: process.env.EMAIL_USER,
+      user: process.env.EMAIL_USER || 'resend',
       pass: process.env.EMAIL_PASS,
     },
   });
 }
 
 async function sendShareNotificationEmail({ toEmail, toUsername, fromUsername, noteTitle, noteId, permission }) {
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.warn('[Share] EMAIL_USER or EMAIL_PASS not set — skipping email notification');
+  if (!process.env.EMAIL_PASS) {
+    console.warn('[Share] EMAIL_PASS not set — skipping email notification');
     return;
   }
 
@@ -57,7 +60,11 @@ async function sendShareNotificationEmail({ toEmail, toUsername, fromUsername, n
   try {
     const transporter = createTransporter();
     await transporter.sendMail({
-      from:    `"Notely" <${process.env.EMAIL_USER}>`,
+      // EMAIL_FROM must be a verified sender — for Resend's free tier, use
+      // onboarding@resend.dev until you verify your own domain. NEVER use
+      // EMAIL_USER here: for Resend that's the literal string "resend"
+      // (the SMTP auth username), not a real mailbox.
+      from:    `"Notely" <${process.env.EMAIL_FROM || 'onboarding@resend.dev'}>`,
       to:      toEmail,
       subject: `${fromUsername} shared a note with you: "${noteTitle}"`,
       html,

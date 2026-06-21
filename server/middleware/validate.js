@@ -42,6 +42,10 @@ const loginRules = [
   body('password').notEmpty().withMessage('Password is required'),
 ];
 
+const deleteAccountRules = [
+  body('password').notEmpty().withMessage('Password is required to delete your account'),
+];
+
 // ── Note validation chains ────────────────────────────────────────────────────
 const createNoteRules = [
   body('title')
@@ -82,6 +86,7 @@ module.exports = {
   validate,
   registerRules,
   loginRules,
+  deleteAccountRules,
   createNoteRules,
   updateNoteRules,
 };

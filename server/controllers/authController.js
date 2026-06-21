@@ -2,6 +2,8 @@
 
 const { URL } = require('url');
 const User = require('../models/User');
+const Note = require('../models/Note');
+const { cleanupNoteAttachments } = require('./uploadController');
 const { signAccessToken, signRefreshToken,
   verifyRefreshToken } = require('../utils/jwt');
 const { sendSuccess, sendError } = require('../utils/response');
@@ -151,4 +153,53 @@ async function refreshToken(req, res, next) {
   }
 }
 
-module.exports = { register, login, getProfile, updateProfile, refreshToken };
+/**
+ * DELETE /api/auth/account
+ * Body: { password }
+ * Protected — permanently deletes the authenticated user's account.
+ *
+ * What happens to data:
+ *   - Notes the user OWNS are deleted entirely, including their attachments,
+ *     versions, and any share links — collaborators lose access immediately.
+ *   - Notes OTHERS own that were shared WITH this user are left untouched;
+ *     the user is simply removed from those notes' sharedWith lists so they
+ *     no longer show up as a stale collaborator.
+ */
+async function deleteAccount(req, res, next) {
+  try {
+    const { password } = req.body;
+
+    // Re-fetch with password (select:false on the schema) and verify it —
+    // this is a destructive, irreversible action, so we don't rely solely
+    // on the access token already being valid.
+    const user = await User.findById(req.user._id).select('+password');
+    if (!user) return sendError(res, 'User not found', 404);
+
+    if (!password || !(await user.comparePassword(password))) {
+      return sendError(res, 'Incorrect password', 401);
+    }
+
+    // 1. Clean up attachments (Cloudinary/local disk) for every note the
+    //    user owns, then delete those notes outright.
+    const ownedNotes = await Note.find({ owner: user._id });
+    for (const note of ownedNotes) {
+      if (note.attachments.length) await cleanupNoteAttachments(note);
+    }
+    await Note.deleteMany({ owner: user._id });
+
+    // 2. Strip the user from sharedWith[] on any notes owned by other people.
+    await Note.updateMany(
+      { 'sharedWith.user': user._id },
+      { $pull: { sharedWith: { user: user._id } } }
+    );
+
+    // 3. Finally, delete the user document itself.
+    await User.findByIdAndDelete(user._id);
+
+    return sendSuccess(res, null, 'Account and all owned notes deleted');
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { register, login, getProfile, updateProfile, refreshToken, deleteAccount };

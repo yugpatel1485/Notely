@@ -1,14 +1,18 @@
 import { useState }     from 'react';
+import { useNavigate }  from 'react-router-dom';
 import { useAuth }      from '../../context/AuthContext';
 import authService      from '../../services/authService';
+import DeleteAccountModal from './DeleteAccountModal';
 import styles           from './SettingsPage.module.css';
 
 export default function SettingsPage() {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, logout } = useAuth();
+  const navigate = useNavigate();
 
   const [form, setForm]     = useState({ username: user?.username || '', avatar: user?.avatar || '' });
   const [status, setStatus] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   function handleChange(e) {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
@@ -111,6 +115,30 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
+      <div className={styles.section}>
+        <h2 className={`${styles.sectionTitle} ${styles.dangerTitle}`}>Danger zone</h2>
+        <p className={styles.dangerText}>
+          Permanently delete your account. Notes you own will be deleted too —
+          notes shared with you by others are unaffected.
+        </p>
+        <button
+          type="button"
+          className={styles.btnDanger}
+          onClick={() => setShowDeleteModal(true)}
+        >
+          Delete account
+        </button>
+      </div>
+
+      {showDeleteModal && (
+        <DeleteAccountModal
+          onClose={() => setShowDeleteModal(false)}
+          onDeleted={() => {
+            logout();
+            navigate('/login', { replace: true });
+          }}
+        />
+      )}
     </div>
   );
 }

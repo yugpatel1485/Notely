@@ -30,6 +30,12 @@ const authService = {
     const res = await api.put('/auth/profile', data);
     return res.data.data.user;
   },
+
+  /** Permanently delete the account. Requires password confirmation. */
+  async deleteAccount(password) {
+    const res = await api.delete('/auth/account', { data: { password } });
+    return res.data;
+  },
 };
 
 export default authService;
