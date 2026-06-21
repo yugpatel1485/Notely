@@ -36,8 +36,12 @@ const UPLOAD_TIMEOUT_MS = 45_000;       // our wrapper — must exceed Cloudinar
 const CLOUDINARY_SDK_TIMEOUT_MS = 40_000;
 const MAX_UPLOAD_ATTEMPTS = 3;
 
+// Note: image/svg+xml is intentionally NOT allowed. SVG files can embed
+// <script> and event-handler attributes, and these files are served back
+// to users directly (local disk or Cloudinary) without any sandboxing —
+// allowing SVG upload would be a stored-XSS vector via attachments.
 const ALLOWED_MIMETYPES = new Set([
-  'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml',
+  'image/jpeg', 'image/png', 'image/gif', 'image/webp',
   'video/mp4', 'video/webm',
   'application/pdf',
   'text/plain', 'text/markdown',

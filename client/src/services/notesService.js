@@ -9,6 +9,7 @@
  */
 
 import api from './api';
+import tokenStorage from '../utils/tokenStorage';
 
 const notesService = {
   // ── Phase 1 / 2 — unchanged ───────────────────────────────────────────────
@@ -122,7 +123,7 @@ const notesService = {
    * @param {'pdf'|'docx'} format
    */
   async exportNote(noteId, format = 'pdf') {
-    const token = localStorage.getItem('accessToken');
+    const token = tokenStorage.getAccessToken();
     const url   = `${api.defaults.baseURL}/notes/${noteId}/export?format=${format}`;
 
     const res = await fetch(url, {

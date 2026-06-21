@@ -1,152 +1,216 @@
-# Notely — Final Combined Project
+# Notely
 
-A full-stack MERN note-sharing web application
+A full-stack MERN note-sharing application with real-time collaboration, AI summaries, version history, and offline support.
+
+---
+
+## Table of Contents
+
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Local Development](#local-development)
+- [Environment Variables](#environment-variables)
+- [API Reference](#api-reference)
+- [Security Model](#security-model)
+- [Production Deployment](#production-deployment)
+- [Pre-Launch Checklist](#pre-launch-checklist)
+- [Known Limitations](#known-limitations)
+- [License](#license)
+
+---
 
 ## Features
 
-### Phase 1 — Core Foundation
-- User authentication (register / login / JWT)
-- Create, edit, delete notes
-- Landing page with animated UI (Hero, Marquee, Features, CTA)
-- Protected dashboard with note editor
+- **Auth** — JWT access + refresh tokens, bcrypt password hashing, per-tab session (closing a tab ends the session; a new tab requires login)
+- **Notes** — create, edit, delete, pin, color-tag, full-text search
+- **Collaboration** — real-time co-editing via Socket.io, live cursors
+- **Sharing** — public links, revocable share tokens, per-user read/write permissions
+- **AI summaries** — note summarization via Google Gemini
+- **Attachments** — file uploads to local disk (dev) or Cloudinary (prod)
+- **Version history** — snapshot, view, and restore previous note versions
+- **Export** — download notes as PDF or DOCX
+- **Analytics** — per-note view tracking, dashboard stats
+- **PWA** — offline banner, service-worker caching, queued mutations when offline
+- **Dark mode** — system-aware with manual override
 
-### Phase 2 — Collaboration & Sharing
-- Real-time collaboration via Socket.io
-- Share notes via public/private links (`/shared/:token`)
-- AI-generated note summaries
-- Markdown preview
-- Share with specific users modal
+## Tech Stack
 
-### Phase 3 — Advanced Features
-- File attachments (upload / download)
-- Version history (view and restore previous note versions)
-- Export notes to PDF or DOCX
-- Analytics dashboard (note stats, view tracking)
-
-### Phase 4 — Polish
-- **Dark Mode** — system-aware + manual toggle, persisted in localStorage
-- **Offline Support** — Service Worker caching, offline banner, API queue
-
----
+| Layer        | Technology |
+|--------------|------------|
+| Frontend     | React 18, Vite, Tailwind CSS |
+| Backend      | Node.js, Express 5, Socket.io |
+| Database     | MongoDB (Atlas) + Mongoose |
+| Auth         | JWT (`jsonwebtoken`) + `bcryptjs` |
+| AI           | Google Gemini API |
+| File storage | Cloudinary (prod) / local disk (dev) |
+| Sanitization | DOMPurify (client-side markdown rendering) |
 
 ## Project Structure
 
 ```
 notely/
 ├── client/                   # React + Vite frontend
-│   ├── public/
-│   │   └── sw.js             # Service Worker (offline support)
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── Auth/         # ProtectedRoute, GuestRoute
-│   │   │   ├── Layout/       # DashboardLayout
-│   │   │   ├── Notes/        # NoteEditor, NoteCard, AttachmentPanel,
-│   │   │   │                 #   ExportMenu, VersionHistoryPanel,
-│   │   │   │                 #   CollaboratorBar, MarkdownPreview, ShareWithUserModal
-│   │   │   ├── OfflineBanner/# Offline indicator
-│   │   │   ├── ThemeToggle/  # Dark/light mode toggle
-│   │   │   └── ...           # Landing page components
-│   │   ├── context/
-│   │   │   ├── AuthContext.jsx
-│   │   │   ├── NotesContext.jsx
-│   │   │   └── ThemeContext.jsx
-│   │   ├── hooks/
-│   │   │   ├── useAiSummary.js
-│   │   │   ├── useCollaboration.js
-│   │   │   ├── useCursor.js
-│   │   │   ├── useOffline.js
-│   │   │   ├── useReveal.js
-│   │   │   └── useTheme.js
-│   │   ├── pages/
-│   │   │   ├── auth/         # LoginPage, RegisterPage
-│   │   │   ├── dashboard/    # DashboardPage, ExplorePage, AnalyticsPage, SettingsPage
-│   │   │   └── shared/       # SharedNotePage (public share links)
-│   │   ├── services/         # API service modules
-│   │   ├── styles/           # globals.css (CSS variables, dark mode)
-│   │   └── utils/
-│   │       └── registerSW.js # Service Worker registration
-│   ├── vite.config.js        # PWA plugin config
-│   └── package.json
-│
+│   ├── public/sw.js          # Service worker (offline support)
+│   └── src/
+│       ├── components/       # UI components (Notes, Auth, Layout, Landing, …)
+│       ├── context/          # AuthContext, NotesContext, ThemeContext
+│       ├── hooks/            # useAiSummary, useCollaboration, useOffline, …
+│       ├── pages/            # auth/, dashboard/, shared/
+│       ├── services/         # api.js, authService.js, notesService.js
+│       ├── utils/            # tokenStorage.js, registerSW.js
+│       └── styles/
 └── server/                   # Node.js + Express backend
-    ├── config/db.js          # MongoDB Atlas connection
-    ├── controllers/
-    │   ├── authController.js
-    │   ├── notesController.js
-    │   ├── shareController.js
-    │   ├── aiController.js
-    │   ├── uploadController.js
-    │   ├── versionController.js
-    │   ├── exportController.js
-    │   └── analyticsController.js
-    ├── middleware/
-    │   ├── auth.js
-    │   ├── errorHandler.js
-    │   └── validate.js
-    ├── models/
-    │   ├── User.js
-    │   └── Note.js
-    ├── routes/               # All API route files
-    ├── sockets/
-    │   └── collaborationSocket.js
-    ├── utils/
-    ├── server.js
-    └── package.json
+    ├── config/db.js          # MongoDB connection
+    ├── controllers/          # auth, notes, share, ai, upload, version, export, analytics
+    ├── middleware/            # auth (JWT), validate (express-validator), errorHandler
+    ├── models/                # User, Note
+    ├── routes/
+    ├── sockets/               # collaborationSocket.js
+    └── server.js
 ```
 
----
+## Prerequisites
 
-## Getting Started
+- Node.js 18+ and npm
+- A MongoDB connection string (local `mongod` or [MongoDB Atlas](https://www.mongodb.com/atlas))
+- (Optional) [Google Gemini API key](https://aistudio.google.com/app/apikey) for AI summaries
+- (Optional) [Cloudinary](https://cloudinary.com/) account for production file storage
+
+## Local Development
 
 ### 1. Backend
 
 ```bash
 cd server
 npm install
-npm run dev
+# create server/.env — see Environment Variables below
+npm run dev          # nodemon, restarts on file change
 ```
+
+The API runs at `http://localhost:5000` by default. Visit `http://localhost:5000/api/health` to confirm it's up and connected to MongoDB.
 
 ### 2. Frontend
 
 ```bash
 cd client
 npm install
+# create client/.env — see Environment Variables below
 npm run dev
 ```
 
----
+The app runs at `http://localhost:5173` by default (Vite's default port).
 
-## API Endpoints
+## Environment Variables
 
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/api/auth/register` | Register user |
-| POST | `/api/auth/login` | Login |
-| GET | `/api/auth/profile` | Get profile |
-| GET | `/api/notes` | List notes |
-| POST | `/api/notes` | Create note |
-| PUT | `/api/notes/:id` | Update note |
-| DELETE | `/api/notes/:id` | Delete note |
-| POST | `/api/notes/:id/share-with` | Share with user |
-| GET | `/api/notes/:id/versions` | Version history |
-| POST | `/api/notes/:id/attachments` | Upload attachment |
-| GET | `/api/notes/:id/export` | Export to PDF/DOCX |
-| GET | `/api/analytics` | Analytics data |
-| POST | `/api/ai/summarize` | AI summary |
+Neither `.env` file is committed (see `.gitignore`) — create them locally. **Never commit real secrets.**
 
----
+### `server/.env`
 
-## Tech Stack
+| Variable | Required | Description |
+|---|---|---|
+| `MONGODB_URI` | ✅ | MongoDB connection string |
+| `JWT_SECRET` | ✅ | Signing secret for access tokens. **Must be ≥32 random characters** — the server refuses to boot otherwise. Generate with `openssl rand -base64 48` |
+| `JWT_REFRESH_SECRET` | ✅ | Signing secret for refresh tokens. Must differ from `JWT_SECRET`, same length requirement |
+| `JWT_EXPIRES_IN` | optional | Access token lifetime (default `7d`) |
+| `JWT_REFRESH_EXPIRES_IN` | optional | Refresh token lifetime (default `30d`) |
+| `CLIENT_URL` | ✅ in prod | Your deployed frontend origin, for CORS (e.g. `https://notely.app`). Defaults to `http://localhost:5173` |
+| `PORT` | optional | API port (default `5000`) |
+| `NODE_ENV` | ✅ in prod | Set to `production` — disables verbose logging and stack traces in error responses |
+| `GEMINI_API_KEY` | optional | Enables `/api/ai/summarise`. Omitted → endpoint returns 503 |
+| `CLOUDINARY_URL` | optional | Format `cloudinary://<key>:<secret>@<cloud_name>`. Present → attachments upload to Cloudinary. Absent → falls back to local disk storage (not suitable for most production hosts — see [Production Deployment](#production-deployment)) |
+| `ATTACHMENT_ALLOWED_HOSTS` | optional | Comma-separated extra hostnames allowed when embedding attachment images in PDF exports (SSRF allowlist). Cloudinary and localhost are allowed by default |
 
-- **Frontend**: React 18, Vite, Tailwind CSS / CSS Modules, Socket.io-client
-- **Backend**: Node.js, Express, Socket.io
-- **Database**: MongoDB Atlas + Mongoose
-- **Auth**: JWT + bcryptjs
-- **AI**: OpenAI API
-- **PWA**: Service Worker, vite-plugin-pwa
+### `client/.env`
 
-## Deployment
+| Variable | Required | Description |
+|---|---|---|
+| `VITE_API_URL` | ✅ | Base URL of the backend API, e.g. `http://localhost:5000/api` (dev) or `https://api.notely.app/api` (prod) |
 
-- **Frontend**: Vercel / Netlify
-- **Backend**: Render / Railway
-- **Database**: MongoDB Atlas
+## API Reference
+
+All responses follow `{ success: boolean, message: string, data?: any, errors?: any[] }`.
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| POST | `/api/auth/register` | — | Register |
+| POST | `/api/auth/login` | — | Login |
+| POST | `/api/auth/refresh` | — | Exchange refresh token for new access token |
+| GET | `/api/auth/profile` | ✅ | Current user profile |
+| PUT | `/api/auth/profile` | ✅ | Update username/avatar |
+| GET | `/api/notes` | ✅ | List own notes (paginated, searchable, filterable) |
+| GET | `/api/notes/public` | — | Browse public notes |
+| GET | `/api/notes/shared/:token` | — | View a note by its public share token |
+| POST | `/api/notes` | ✅ | Create note |
+| GET | `/api/notes/:id` | ✅ | Get note (owner, shared user, or public) |
+| PUT | `/api/notes/:id` | ✅ | Update note (owner only) |
+| DELETE | `/api/notes/:id` | ✅ | Delete note (owner only) |
+| POST | `/api/notes/:id/share` | ✅ | Generate/revoke public share token |
+| GET/POST | `/api/notes/:id/share-with` | ✅ | List/add collaborators by email |
+| DELETE | `/api/notes/:id/share-with/:userId` | ✅ | Revoke a collaborator |
+| POST/DELETE | `/api/notes/:id/attachments[/:attId]` | ✅ | Upload/delete attachment |
+| GET/POST | `/api/notes/:id/versions` | ✅ | List/create version snapshot |
+| POST | `/api/notes/:id/versions/:verId/restore` | ✅ | Restore a version |
+| GET | `/api/notes/:id/export?format=pdf\|docx` | ✅ | Export note |
+| POST | `/api/ai/summarise` | ✅ | AI summary of a note |
+| GET | `/api/analytics/dashboard` | ✅ | Dashboard stats |
+| POST | `/api/analytics/notes/:id/view` | — | Record a note view |
+| GET | `/api/health` | — | Liveness + DB connection status |
+
+## Security Model
+
+- **Passwords** — bcrypt, 12 salt rounds, never returned from queries (`select: false`)
+- **Tokens** — short-lived JWT access token + longer-lived refresh token, both signed with independently-validated secrets (server refuses to start with weak/missing secrets)
+- **Session scope** — tokens are stored in `sessionStorage`, not `localStorage`: each browser tab has its own session, and closing a tab ends it. Refreshing or duplicating the same tab keeps the session (same storage context); a brand-new tab does not inherit it
+- **Access control** — every note/attachment/version/share mutation re-checks ownership or collaborator permission server-side; nothing relies on client-supplied role/ownership claims
+- **Rate limiting** — global limiter, tighter limits on `/auth`, `/ai`, and `/export`
+- **SSRF protection** — PDF export only fetches attachment images from an explicit hostname allowlist, with private/link-local IP ranges always blocked regardless of allowlist
+- **Path traversal protection** — local-disk attachment deletion validates the resolved path stays inside the uploads root before unlinking
+- **Stored-content XSS** — markdown note content is HTML-escaped and run through DOMPurify before rendering; link targets are restricted to `http(s):`/`mailto:`
+- **Upload restrictions** — `image/svg+xml` is intentionally excluded from allowed attachment types (SVGs can embed `<script>` and are served back without sandboxing)
+- **Headers** — `helmet` is applied; CORS is locked to a single configured origin with credentials
+
+This list reflects manual review of the code paths above — it is **not** a substitute for a dependency audit (`npm audit`) or a third-party penetration test before handling real user data.
+
+## Production Deployment
+
+A common low-cost split:
+
+- **Frontend** → Vercel or Netlify (`npm run build` in `client/`, deploy the `dist/` output)
+- **Backend** → Render or Railway (`npm start` in `server/`)
+- **Database** → MongoDB Atlas
+
+### Backend checklist
+
+1. Set all required env vars from the table above on your host, with `NODE_ENV=production`.
+2. Set `CLIENT_URL` to your real deployed frontend origin (exact scheme + domain, no trailing slash).
+3. **Set `CLOUDINARY_URL`.** Without it, attachments are written to local disk on the server container — most PaaS hosts (Render, Railway, Heroku-style) use **ephemeral filesystems**, so uploaded files will be lost on every redeploy/restart. Cloudinary (or S3) is required for durable file storage in production.
+4. Confirm the MongoDB Atlas cluster's network access list allows your backend host's IP (or `0.0.0.0/0` if your host uses dynamic egress IPs, in which case rely on the database user's credentials for security, not IP allowlisting).
+5. **TLS validation** — `server/config/db.js` currently sets `tlsAllowInvalidCertificates: true` on the MongoDB connection. This disables certificate validation and should be removed/set to `false` before going live; it weakens the security of the DB connection and is unnecessary against a standard Atlas cluster.
+
+### Frontend checklist
+
+1. Set `VITE_API_URL` to your deployed backend's `/api` URL at build time (Vite env vars are baked in at build, not runtime).
+2. Confirm the service worker (`public/sw.js`) caching strategy doesn't serve stale API responses for sensitive data — review before enabling aggressive caching in production.
+
+## Pre-Launch Checklist
+
+- [ ] Run `npm audit` in both `client/` and `server/` and resolve high/critical findings
+- [ ] Remove `tlsAllowInvalidCertificates: true` from `server/config/db.js`
+- [ ] Set `CLOUDINARY_URL` (or equivalent durable storage) — do not rely on local disk in production
+- [ ] Generate fresh, unique `JWT_SECRET` / `JWT_REFRESH_SECRET` for production (do not reuse dev secrets)
+- [ ] Set `CLIENT_URL` / `VITE_API_URL` to real production domains
+- [ ] Confirm MongoDB Atlas network access + database user credentials are production-grade
+- [ ] Manually test: register/login, multi-tab session isolation, note sharing (public + per-user), upload/export, AI summary, offline queue
+- [ ] Set up basic uptime/error monitoring on the backend (e.g. host's built-in logs/alerts, or a service like Sentry)
+
+## Known Limitations
+
+- No automated test suite yet — all verification above is manual.
+- Refresh tokens are issued with a 30-day lifetime but, since access tokens now live in `sessionStorage`, the practical session lifetime is bounded by tab lifetime, not token expiry.
+- Socket.io collaboration does not currently implement operational-transform/CRDT conflict resolution — concurrent edits to the same region of a note can race.
+
+## License
+
+Add a license of your choice (e.g. MIT) before publishing publicly, if you intend others to reuse this code.

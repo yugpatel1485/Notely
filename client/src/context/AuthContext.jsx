@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useReducer, useCallback } from 'react';
 import authService from '../services/authService';
+import tokenStorage from '../utils/tokenStorage';
 
 // ── State shape ───────────────────────────────────────────────────────────────
 const initialState = {
@@ -33,21 +34,19 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  // Persist tokens to localStorage
+  // Persist tokens via the shared sessionStorage-backed helper (per-tab session)
   const persistTokens = useCallback((accessToken, refreshToken) => {
-    localStorage.setItem('accessToken',  accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
+    tokenStorage.setTokens(accessToken, refreshToken);
   }, []);
 
   const clearTokens = useCallback(() => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+    tokenStorage.clearTokens();
   }, []);
 
   // On mount — try to restore session from stored token
   useEffect(() => {
     async function restoreSession() {
-      const token = localStorage.getItem('accessToken');
+      const token = tokenStorage.getAccessToken();
       if (!token) {
         dispatch({ type: 'AUTH_FAILURE', payload: null });
         return;

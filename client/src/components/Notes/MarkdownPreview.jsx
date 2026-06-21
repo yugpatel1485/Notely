@@ -14,13 +14,30 @@
  *   ---  horizontal rules
  *   blank lines → <p> breaks
  *
- * ⚠  Content is rendered into an isolated container with dangerouslySetInnerHTML.
- *    The parser itself never fetches external resources and all user content
- *    is treated as text (not scripts), but for full XSS safety the real app
- *    should pipe through DOMPurify before render (install: npm i dompurify).
+ * Content is rendered into an isolated container with dangerouslySetInnerHTML.
+ * The generated HTML is sanitized with DOMPurify immediately before render —
+ * this is the only thing standing between user-supplied note content and a
+ * stored XSS, since notes can be public or shared with other users.
  */
 
+import DOMPurify from 'dompurify';
 import styles from './MarkdownPreview.module.css';
+
+// Block javascript:, data:, and other non-http(s) link targets — markdown
+// links are user-controlled and `[click me](javascript:alert(1))` would
+// otherwise produce a live XSS vector even through a sanitizer that doesn't
+// know to special-case it.
+function sanitizeHref(url) {
+  try {
+    const parsed = new URL(url, window.location.origin);
+    if (['http:', 'https:', 'mailto:'].includes(parsed.protocol)) {
+      return parsed.href;
+    }
+  } catch {
+    // relative or unparseable — fall through to reject
+  }
+  return '#';
+}
 
 // ── Inline-level transformations (applied in order) ───────────────────────────
 const INLINE_RULES = [
@@ -34,12 +51,22 @@ const INLINE_RULES = [
   [/_(.+?)_/g,             '<em>$1</em>'],
   // Strikethrough
   [/~~(.+?)~~/g,           '<del>$1</del>'],
-  // Links
-  [/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'],
+  // Links — href is resolved through sanitizeHref so javascript:/data: URIs
+  // can never end up in the DOM.
+  [/\[([^\]]+)\]\(([^)]+)\)/g, (_m, label, href) =>
+    `<a href="${sanitizeHref(href)}" target="_blank" rel="noopener noreferrer">${label}</a>`],
 ];
 
 function applyInlineRules(text) {
-  let out = text;
+  // Escape any literal HTML in the source text FIRST — otherwise something
+  // like a note containing `<img src=x onerror=alert(1)>` passes straight
+  // through untouched (it matches none of the markdown patterns below) and
+  // becomes live HTML once injected via dangerouslySetInnerHTML.
+  let out = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
   for (const [pattern, replacement] of INLINE_RULES) {
     out = out.replace(pattern, replacement);
   }
@@ -158,7 +185,16 @@ function markdownToHtml(md) {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function MarkdownPreview({ content, className = '' }) {
-  const html = markdownToHtml(content ?? '');
+  const rawHtml = markdownToHtml(content ?? '');
+  // Defense in depth: even though markdownToHtml escapes raw HTML and
+  // sanitizes link hrefs, run the final string through DOMPurify too —
+  // it's cheap insurance against anything the hand-rolled parser misses,
+  // and this content can be public or shared with other users.
+  const html = DOMPurify.sanitize(rawHtml, {
+    ALLOWED_TAGS: ['h1','h2','h3','h4','h5','h6','p','br','hr','strong','em','del',
+      'code','pre','blockquote','ul','ol','li','a'],
+    ALLOWED_ATTR: ['href','target','rel','class'],
+  });
 
   if (!html) {
     return (
@@ -171,7 +207,6 @@ export default function MarkdownPreview({ content, className = '' }) {
   return (
     <div
       className={`${styles.preview} ${className}`}
-      // ⚠ In production: wrap `html` with DOMPurify.sanitize() first
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );

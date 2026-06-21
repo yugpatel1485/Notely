@@ -11,6 +11,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { io } from 'socket.io-client';
 import { useAuth } from '../context/AuthContext';
+import tokenStorage from '../utils/tokenStorage';
 
 const SOCKET_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
 
@@ -36,7 +37,7 @@ export default function useCollaboration(noteId) {
   useEffect(() => {
     if (!noteId) return;
 
-    const token = localStorage.getItem('accessToken');
+    const token = tokenStorage.getAccessToken();
     if (!token) return;
 
     // ── Create socket ────────────────────────────────────────────────────────
