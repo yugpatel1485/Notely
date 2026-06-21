@@ -187,7 +187,7 @@ A common low-cost split:
 2. Set `CLIENT_URL` to your real deployed frontend origin (exact scheme + domain, no trailing slash).
 3. **Set `CLOUDINARY_URL`.** Without it, attachments are written to local disk on the server container — most PaaS hosts (Render, Railway, Heroku-style) use **ephemeral filesystems**, so uploaded files will be lost on every redeploy/restart. Cloudinary (or S3) is required for durable file storage in production.
 4. Confirm the MongoDB Atlas cluster's network access list allows your backend host's IP (or `0.0.0.0/0` if your host uses dynamic egress IPs, in which case rely on the database user's credentials for security, not IP allowlisting).
-5. **TLS validation** — `server/config/db.js` currently sets `tlsAllowInvalidCertificates: true` on the MongoDB connection. This disables certificate validation and should be removed/set to `false` before going live; it weakens the security of the DB connection and is unnecessary against a standard Atlas cluster.
+5. **TLS validation** — the MongoDB connection in `server/config/db.js` uses standard TLS certificate validation (no `tlsAllowInvalidCertificates` override). This works out of the box against MongoDB Atlas; only revisit if you're connecting to a self-hosted MongoDB with a self-signed certificate.
 
 ### Frontend checklist
 
@@ -197,7 +197,6 @@ A common low-cost split:
 ## Pre-Launch Checklist
 
 - [ ] Run `npm audit` in both `client/` and `server/` and resolve high/critical findings
-- [ ] Remove `tlsAllowInvalidCertificates: true` from `server/config/db.js`
 - [ ] Set `CLOUDINARY_URL` (or equivalent durable storage) — do not rely on local disk in production
 - [ ] Generate fresh, unique `JWT_SECRET` / `JWT_REFRESH_SECRET` for production (do not reuse dev secrets)
 - [ ] Set `CLIENT_URL` / `VITE_API_URL` to real production domains

@@ -20,7 +20,6 @@ async function connectDB() {
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
       tls: true,
-      tlsAllowInvalidCertificates: true,
     });
     console.log(`[DB] MongoDB connected: ${mongoose.connection.host}`);
   } catch (err) {
