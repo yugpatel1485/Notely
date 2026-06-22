@@ -2,7 +2,7 @@
 
 > A full-stack MERN note-sharing application with real-time collaboration, AI summaries, version history, and offline support.
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-notely--gules--three.vercel.app-blue?style=for-the-badge)](https://notely-gules-three.vercel.app/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-notely--notes--three.vercel.app-blue?style=for-the-badge)](https://notely-notes-three.vercel.app/)
 ![JavaScript](https://img.shields.io/badge/JavaScript-69.4%25-yellow?style=flat-square)
 ![CSS](https://img.shields.io/badge/CSS-30.5%25-blue?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
@@ -139,7 +139,7 @@ Neither `.env` file is committed — create them locally from the `.env.example`
 | `JWT_REFRESH_SECRET`       | ✅         | Must differ from `JWT_SECRET`, same length requirement                                               |
 | `JWT_EXPIRES_IN`           | optional  | Access token lifetime (default `7d`)                                                                 |
 | `JWT_REFRESH_EXPIRES_IN`   | optional  | Refresh token lifetime (default `30d`)                                                               |
-| `CLIENT_URL`               | ✅ in prod | Your deployed frontend origin for CORS (e.g. `https://notely-gules-three.vercel.app`)               |
+| `CLIENT_URL`               | ✅ in prod | Your deployed frontend origin for CORS (e.g. `https://notely-notes-three.vercel.app`)               |
 | `PORT`                     | optional  | API port (default `5000`)                                                                            |
 | `NODE_ENV`                 | ✅ in prod | Set to `production`                                                                                  |
 | `GEMINI_API_KEY`           | optional  | Enables `/api/ai/summarise`. Omitted → endpoint returns 503                                          |
