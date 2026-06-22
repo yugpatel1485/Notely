@@ -208,27 +208,6 @@ All responses follow `{ success: boolean, message: string, data?: any, errors?: 
 
 ---
 
-## Production Deployment
-
-**Frontend** → Vercel (`npm run build` in `client/`, deploy `dist/`)  
-**Backend** → Render or Railway (`npm start` in `server/`)  
-**Database** → MongoDB Atlas
-
-### Backend checklist
-
-1. Set all required env vars with `NODE_ENV=production`
-2. Set `CLIENT_URL` to your exact deployed frontend origin (no trailing slash)
-3. **Set `CLOUDINARY_URL`** — without it, attachments use ephemeral local disk and will be lost on redeploy
-4. Confirm MongoDB Atlas network access allows your backend host's IP
-5. TLS validation works out of the box with Atlas; only revisit for self-hosted MongoDB with a self-signed cert
-
-### Frontend checklist
-
-1. Set `VITE_API_URL` to your deployed backend `/api` URL at build time (baked in by Vite)
-2. Review service worker caching strategy for sensitive API routes before enabling aggressive caching
-
----
-
 ## License
 
 MIT — see [LICENSE](./LICENSE)
