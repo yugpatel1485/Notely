@@ -15,19 +15,23 @@ const { sendSuccess,
         sendError }     = require('../utils/response');
 
 // ── Email helper ──────────────────────────────────────────────────────────────
-// Sends via Resend's HTTP API (https://api.resend.com/emails) over standard
-// HTTPS, rather than raw SMTP. Some hosts (Render included) have flaky or
-// blocked outbound SMTP ports even with auth, which surfaces as
-// ECONNTIMEDOUT connecting to smtp.resend.com:587 — the HTTP API sidesteps
-// that entirely since it's just a normal HTTPS POST.
+// Sends via Brevo's HTTP API (https://api.brevo.com/v3/smtp/email).
+// Chosen over Resend because Brevo's free tier allows sending to ANY
+// recipient once you verify a single sender email (no domain purchase
+// required) — Resend's free tier restricts sends to your own account email
+// until a full domain is verified.
 //
-// EMAIL_PASS holds the Resend API key (same value you'd have used as the
-// SMTP password) — kept under that name so existing env vars don't need
-// renaming. EMAIL_HOST/EMAIL_PORT/EMAIL_SECURE/EMAIL_USER are no longer used
-// and can be removed from your env whenever convenient.
+// BREVO_API_KEY: Brevo dashboard → SMTP & API → API Keys → generate one.
+// EMAIL_FROM: must be a sender verified in Brevo (Senders, Domains & Dedicated
+//             IPs → Senders → Add a Sender) — Brevo emails you a confirmation
+//             link, no DNS records needed.
 async function sendShareNotificationEmail({ toEmail, toUsername, fromUsername, noteTitle, noteId, permission }) {
-  if (!process.env.EMAIL_PASS) {
-    console.warn('[Share] EMAIL_PASS not set — skipping email notification');
+  if (!process.env.BREVO_API_KEY) {
+    console.warn('[Share] BREVO_API_KEY not set — skipping email notification');
+    return;
+  }
+  if (!process.env.EMAIL_FROM) {
+    console.warn('[Share] EMAIL_FROM not set — skipping email notification');
     return;
   }
 
@@ -50,25 +54,24 @@ async function sendShareNotificationEmail({ toEmail, toUsername, fromUsername, n
   `;
 
   try {
-    const res = await fetch('https://api.resend.com/emails', {
+    const res = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.EMAIL_PASS}`,
+        'api-key':       process.env.BREVO_API_KEY,
         'Content-Type':  'application/json',
+        'Accept':        'application/json',
       },
       body: JSON.stringify({
-        // EMAIL_FROM must be a verified sender — use onboarding@resend.dev
-        // until you verify your own domain in Resend.
-        from:    `Notely <${process.env.EMAIL_FROM || 'onboarding@resend.dev'}>`,
-        to:      [toEmail],
-        subject: `${fromUsername} shared a note with you: "${noteTitle}"`,
-        html,
+        sender:      { name: 'Notely', email: process.env.EMAIL_FROM },
+        to:          [{ email: toEmail, name: toUsername }],
+        subject:     `${fromUsername} shared a note with you: "${noteTitle}"`,
+        htmlContent: html,
       }),
     });
 
     if (!res.ok) {
       const body = await res.text().catch(() => '');
-      throw new Error(`Resend API ${res.status}: ${body}`);
+      throw new Error(`Brevo API ${res.status}: ${body}`);
     }
 
     console.log(`[Share] Email sent to ${toEmail}`);
