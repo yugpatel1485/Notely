@@ -7,14 +7,14 @@
 ![CSS](https://img.shields.io/badge/CSS-30.5%25-blue?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
-🔗 **[https://notely-gules-three.vercel.app/](https://notely-gules-three.vercel.app/)**
+🔗 **[https://notely-notes-three.vercel.app/](https://notely-notes-three.vercel.app/)**
 
 ---
 
 ## Screenshots
 
-> _Add screenshots or a GIF of the dashboard here — this makes a huge difference for recruiters and visitors._
-> _Quick way: record a screen capture of the live site and drop it in `/docs/screenshots/`._
+![Home](image.png)
+![Dashboard](image-1.png)
 
 ---
 
