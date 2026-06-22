@@ -93,7 +93,10 @@ function assertSafeUrl(rawUrl) {
 }
 
 function canAccess(note, userId) {
-  if (note.owner.toString() === userId) return true;
+  // note.owner may be a populated document (has ._id) or a raw ObjectId,
+  // depending on the query — handle both so this stays correct either way.
+  const ownerId = note.owner?._id ? note.owner._id.toString() : note.owner?.toString();
+  if (ownerId === userId) return true;
   if (note.isPublic) return true;
   return note.sharedWith.some((s) => s.user?.toString() === userId);
 }

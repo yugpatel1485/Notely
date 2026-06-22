@@ -75,7 +75,7 @@
 }
 
 .badgePublic  { background: rgba(74, 124, 111, 0.15); color: var(--accent2); border: 1px solid rgba(74, 124, 111, 0.25); }
-.badgePrivate { background: rgba(128, 128, 128, 0.15); color: var(--muted);   border: 1px solid rgba(128, 128, 128, 0.25); }
+.badgePrivate { background: rgba(60, 60, 60, 0.12);   color: #3a3a3a;        border: 1px solid rgba(60, 60, 60, 0.22); }
 .badgeShared  { background: rgba(79, 70, 229, 0.12);  color: #6366f1;        border: 1px solid rgba(99, 102, 241, 0.3); }
 
 /* Small people icon shown on owned notes that have collaborators */
@@ -85,8 +85,8 @@
   gap: 3px;
   font-size: 0.62rem;
   font-family: var(--font-mono);
-  color: var(--muted);
-  opacity: 0.75;
+  color: #3a3a3a;
+  font-weight: 600;
 }
 
 /* ── Content ──────────────────────────────────────────────────────────────── */

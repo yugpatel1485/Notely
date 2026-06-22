@@ -13,26 +13,18 @@ const Note              = require('../models/Note');
 const User              = require('../models/User');
 const { sendSuccess,
         sendError }     = require('../utils/response');
-const nodemailer        = require('nodemailer');
 
 // ── Email helper ──────────────────────────────────────────────────────────────
-function createTransporter() {
-  // Supports any SMTP provider via env vars. Defaults are set up for Resend's
-  // free tier (https://resend.com — 100 emails/day, 3,000/month, no card
-  // required): SMTP user is literally "resend", password is your Resend API
-  // key. Gmail SMTP also works (EMAIL_HOST=smtp.gmail.com, port 587, with an
-  // App Password) but Gmail throttles/flags automated sends much sooner.
-  return nodemailer.createTransport({
-    host:   process.env.EMAIL_HOST   || 'smtp.resend.com',
-    port:   parseInt(process.env.EMAIL_PORT || '587', 10),
-    secure: process.env.EMAIL_SECURE === 'true',  // true for port 465
-    auth: {
-      user: process.env.EMAIL_USER || 'resend',
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-}
-
+// Sends via Resend's HTTP API (https://api.resend.com/emails) over standard
+// HTTPS, rather than raw SMTP. Some hosts (Render included) have flaky or
+// blocked outbound SMTP ports even with auth, which surfaces as
+// ECONNTIMEDOUT connecting to smtp.resend.com:587 — the HTTP API sidesteps
+// that entirely since it's just a normal HTTPS POST.
+//
+// EMAIL_PASS holds the Resend API key (same value you'd have used as the
+// SMTP password) — kept under that name so existing env vars don't need
+// renaming. EMAIL_HOST/EMAIL_PORT/EMAIL_SECURE/EMAIL_USER are no longer used
+// and can be removed from your env whenever convenient.
 async function sendShareNotificationEmail({ toEmail, toUsername, fromUsername, noteTitle, noteId, permission }) {
   if (!process.env.EMAIL_PASS) {
     console.warn('[Share] EMAIL_PASS not set — skipping email notification');
@@ -58,17 +50,27 @@ async function sendShareNotificationEmail({ toEmail, toUsername, fromUsername, n
   `;
 
   try {
-    const transporter = createTransporter();
-    await transporter.sendMail({
-      // EMAIL_FROM must be a verified sender — for Resend's free tier, use
-      // onboarding@resend.dev until you verify your own domain. NEVER use
-      // EMAIL_USER here: for Resend that's the literal string "resend"
-      // (the SMTP auth username), not a real mailbox.
-      from:    `"Notely" <${process.env.EMAIL_FROM || 'onboarding@resend.dev'}>`,
-      to:      toEmail,
-      subject: `${fromUsername} shared a note with you: "${noteTitle}"`,
-      html,
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.EMAIL_PASS}`,
+        'Content-Type':  'application/json',
+      },
+      body: JSON.stringify({
+        // EMAIL_FROM must be a verified sender — use onboarding@resend.dev
+        // until you verify your own domain in Resend.
+        from:    `Notely <${process.env.EMAIL_FROM || 'onboarding@resend.dev'}>`,
+        to:      [toEmail],
+        subject: `${fromUsername} shared a note with you: "${noteTitle}"`,
+        html,
+      }),
     });
+
+    if (!res.ok) {
+      const body = await res.text().catch(() => '');
+      throw new Error(`Resend API ${res.status}: ${body}`);
+    }
+
     console.log(`[Share] Email sent to ${toEmail}`);
   } catch (err) {
     // Non-fatal — sharing still succeeds, email just didn't send
