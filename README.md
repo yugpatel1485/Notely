@@ -204,8 +204,6 @@ All responses follow `{ success: boolean, message: string, data?: any, errors?: 
 - **Upload restrictions** — `image/svg+xml` excluded (SVGs can embed scripts)
 - **Headers** — `helmet` applied; CORS locked to configured origin with credentials
 
-> This reflects a manual code review, not a substitute for `npm audit` or a third-party penetration test.
-
 ---
 
 ## License
